@@ -2,37 +2,35 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    id : {
-        type : String,
-        required : false
+    id: {
+        type: String,
+        required: false
     },
-    classes : {
-        type : [ClassroomsSchema],
-        required : false
+    email: {
+        type: String,
+        required: true
     },
-    email : {
-        type : String,
-        required : true
+    display_name: {
+        type: String,
+        required: true
     },
-    display_name : {
-        type : String,
-        required : true
+    classes: [{
+        type: Schema.Types.ObjectId, 
+        ref: 'Classroom'
+    }],
+    role: {
+        type: String,
+        required: true
     },
-    todoList : {
-        type : TodoListSchema,
-        required : false
+    todoList: {
+        type: Schema.Types.ObjectId, 
+        ref: 'TodoList'
     },
-    role : {
-        type : String,
-        required : true
+    app_settings: {
+        type: Schema.Types.ObjectId, 
+        ref: 'AppSettings'
     },
-    app_settings : {
-        type : AppSettingsSchema,
-        required : false
-    },
-
-},{timestamp : true})
+}, { timestamps: true }); 
 
 const User = mongoose.model('User', userSchema);
-
 export default User;

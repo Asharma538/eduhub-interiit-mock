@@ -3,11 +3,11 @@ const Schema = mongoose.Schema;
 
 const announcementSchema = new Schema(
   {
-    id: {
+    content: {
       type: String,
       required: true,
     },
-    content: {
+    id: {
       type: String,
       required: true,
     },
@@ -17,7 +17,7 @@ const announcementSchema = new Schema(
     },
     class_id: {
       type: Schema.Types.ObjectId,
-      ref: "Classrooms",
+      ref: "Classroom",
       required: true,
     },
     created_date: {
@@ -31,13 +31,17 @@ const announcementSchema = new Schema(
     },
     file_url: {
       type: String,
-        required: false,
+      required: false,
     },
-    comments: [CommentSchema],
+    comments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
   },
   { timestamps: true }
 );
-
-const Announcement  = mongoose.model('Announcement', announcementSchema);
+const Announcement = mongoose.model("Announcement", announcementSchema);
 
 export default Announcement;

@@ -1,15 +1,10 @@
 import mongoose from 'mongoose';
-
 const Schema = mongoose.Schema;
 
 const classroomSchema = new Schema({
-    id : {
-        type : String,
-        required : true
-    },
-    announcements : {
-        type : [AnnouncementSchema],
-        required : false
+    id: {
+        type: String,
+        required: true
     },
     name: {
         type: String,
@@ -23,21 +18,27 @@ const classroomSchema = new Schema({
         type: String,
         required: true
     },
-    comments : {
-        type : [CommentSchema],
-        required : false
-    },
-    teachers : {
-        type : [UserSchema],
-        required : true
-    },
-    students : {
-        type : [UserSchema],
-        required : false
-    },
-
-},{timestamps : true});
+    announcements: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Announcement',
+    }],
+    comments: [{
+        type: Schema.Types.ObjectId, 
+        ref: 'Comment'
+    }],
+    assignments: [{
+        type: Schema.Types.ObjectId, 
+        ref: 'Assignment'
+    }],
+    teachers: [{
+        type: Schema.Types.ObjectId, 
+        ref: 'User',
+    }],
+    students: [{
+        type: Schema.Types.ObjectId, 
+        ref: 'User',
+    }],
+}, {timestamps: true});
 
 const Classroom = mongoose.model('Classroom', classroomSchema);
-
 export default Classroom;
