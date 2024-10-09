@@ -37,3 +37,7 @@ const classroomSchema = new Schema({
     },
 
 },{timestamps : true});
+
+const Classroom = mongoose.model('Classroom', classroomSchema);
+
+export default Classroom;
