@@ -18,10 +18,6 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId, 
         ref: 'Classroom'
     }],
-    role: {
-        type: String,
-        required: true
-    },
     todoList: {
         type: Schema.Types.ObjectId, 
         ref: 'TodoList'
@@ -34,3 +30,4 @@ const userSchema = new Schema({
 
 const User = mongoose.model('User', userSchema);
 export default User;
+
