@@ -18,10 +18,6 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId, 
         ref: 'Classroom'
     }],
-    role: {
-        type: String,
-        required: true
-    },
     todoList: {
         type: Schema.Types.ObjectId, 
         ref: 'TodoList'
