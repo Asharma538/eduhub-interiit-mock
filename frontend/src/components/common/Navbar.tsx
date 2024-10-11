@@ -6,7 +6,7 @@ import JoinClass from "./JoinClass";
 
 // Simulate user data for demonstration
 const useAuthState = () => {
-  const user = { photoURL: "path_to_user_photo.jpg" }; // Simulated user data
+  const user = { photoURL: "eduhub.png" }; // Simulated user data
   const loading = false;
   const error = null;
   return [user, loading, error];
