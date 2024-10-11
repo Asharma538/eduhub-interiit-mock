@@ -2,17 +2,14 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const classroomSchema = new Schema({
-    id: {
-        type: String,
-        required: true
-    },
     name: {
         type: String,
-        required: true
+        required: true,
     },
     invitation_code: {
         type: String,
-        required: true
+        required: true,
+        unique:true
     },
     details: {
         type: String,
