@@ -2,31 +2,18 @@ import { createSignal, For } from "solid-js";
 import { IconButton } from "@suid/material";
 import SendOutlinedIcon from "@suid/icons-material/SendOutlined";
 import moment from "moment";
-import Announcement from "../components/Class/Announcements";
 
 function Class() {
-  const [classData, setClassData] = createSignal({
-    name: "SolidJS Class",
-    posts: [
-      {
-        authorId: "user1",
-        content: "Welcome to the class!",
-        date: moment().subtract(1, 'days').format("MMM Do YY"),
-        image: "https://via.placeholder.com/50",
-        name: "John Doe",
-      },
-      {
-        authorId: "user2",
-        content: "Don’t forget the meeting tomorrow!",
-        date: moment().subtract(2, 'days').format("MMM Do YY"),
-        image: "https://via.placeholder.com/50",
-        name: "Jane Smith",
-      }
-    ]
-  });
-
   const [announcementContent, setAnnouncementContent] = createSignal("");
-  const [posts, setPosts] = createSignal([...classData().posts]);
+  const [posts, setPosts] = createSignal([
+    {
+      authorId: "user123",
+      content: "Welcome to the class!",
+      date: moment().format("MMM Do YY"),
+      image: "https://via.placeholder.com/50",
+      name: "Poushali Nandi",
+    },
+  ]);
   const [user] = createSignal({
     uid: "user123",
     photoURL: "https://via.placeholder.com/50",
@@ -34,48 +21,89 @@ function Class() {
   });
 
   const createPost = () => {
-    const newPost = {
-      authorId: user().uid,
-      content: announcementContent(),
-      date: moment().format("MMM Do YY"),
-      image: user().photoURL,
-      name: user().displayName,
-    };
-
-    // Add the new post to the top of the list
-    setPosts([newPost, ...posts()]);
-    setAnnouncementContent(""); // Clear the input field after posting
+    if (announcementContent().trim() !== "") {
+      const newPost = {
+        authorId: user().uid,
+        content: announcementContent(),
+        date: moment().format("MMM Do YY"),
+        image: user().photoURL,
+        name: user().displayName,
+      };
+      setPosts([newPost, ...posts()]);
+      setAnnouncementContent("");
+    }
   };
 
   return (
-    <div class="w-2/3 mx-auto">
-      <div class="class__nameBox bg-teal-600 text-white h-96 mt-8 rounded-lg flex flex-col items-start p-8 font-bold text-4xl">
-        <div>{classData().name}</div>
+    <div class="w-full max-w-6xl mx-auto mt-8">
+      {/* Class header section */}
+      <div class="relative bg-teal-600 rounded-lg h-48 flex items-center justify-center">
+     
+        <h1 class="relative text-white text-3xl font-semibold">
+          Introduction to Profession
+        </h1>
       </div>
-      <div class="class__announce flex items-center w-full p-5 mb-6 shadow-md justify-between rounded-xl mt-5">
-        <img src={user().photoURL} alt="My image" class="h-12 w-12 rounded-full" />
-        <input
-          type="text"
-          value={announcementContent()}
-          onInput={(e) => setAnnouncementContent(e.target.value)}
-          placeholder="Announce something to your class"
-          class="border-none p-4 w-full mx-5 text-lg outline-none"
-        />
-        <IconButton onClick={createPost}>
-          <SendOutlinedIcon />
-        </IconButton>
+
+      {/* Tabs: Stream, Classwork, People */}
+      <div class="flex justify-center space-x-8 mt-6">
+        <button class="border-b-2 border-blue-500 font-semibold">Stream</button>
+        <button class="text-gray-500">Classwork</button>
+        <button class="text-gray-500">People</button>
       </div>
-      <For each={posts()}>
-        {(post) => (
-          <Announcement
-            authorId={post.authorId}
-            content={post.content}
-            date={post.date}
-            image={post.image}
-            name={post.name}
-          />
-        )}
-      </For>
+
+      {/* Upcoming Section */}
+      <div class="flex mt-6">
+        <div class="bg-white shadow-md rounded-lg p-4 w-1/4 mr-6">
+          <h2 class="font-semibold text-lg">Upcoming</h2>
+          <p class="text-sm text-gray-500">Woohoo, no work due soon!</p>
+          <a href="#" class="text-blue-500 mt-2 block">
+            View all
+          </a>
+        </div>
+
+        {/* Announcements and Posts */}
+        <div class="w-3/4">
+          {/* Announcement input */}
+          <div class="bg-white shadow-md rounded-lg p-4 mb-4 flex items-center">
+            <img
+              src={user().photoURL}
+              alt="User"
+              class="h-12 w-12 rounded-full mr-4"
+            />
+            <input
+              type="text"
+              value={announcementContent()}
+              onInput={(e) => setAnnouncementContent(e.target.value)}
+              placeholder="Announce something to your class"
+              class="flex-grow border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <IconButton onClick={createPost}>
+              <SendOutlinedIcon class="text-blue-500" />
+            </IconButton>
+          </div>
+
+          {/* Render Announcements */}
+          <div class="space-y-4">
+            <For each={posts()}>
+              {(post) => (
+                <div class="bg-white shadow-md rounded-lg p-4 flex items-start space-x-4">
+                  <img
+                    src={post.image}
+                    alt="User"
+                    class="h-12 w-12 rounded-full"
+                  />
+                  <div>
+                    <div class="text-sm text-gray-500">
+                      {post.name} • {post.date}
+                    </div>
+                    <p class="mt-2 text-gray-800">{post.content}</p>
+                  </div>
+                </div>
+              )}
+            </For>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

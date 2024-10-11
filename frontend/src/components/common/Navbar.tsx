@@ -1,24 +1,11 @@
 import { createSignal } from "solid-js";
-import { Avatar, IconButton, MenuItem, Menu } from "@suid/material";
-import { Add, Apps, Menu as MenuIcon } from "@suid/icons-material";
+import {  IconButton, MenuItem, Menu } from "@suid/material";
+import { Add,  Menu as MenuIcon } from "@suid/icons-material";
 import CreateClass from "../Dashboard/CreateClass";
 import JoinClass from "../Dashboard/JoinClass";
 
-// Simulate user data for demonstration
-const useAuthState = () => {
-  const user = { photoURL: "path_to_user_photo.jpg" }; // Simulated user data
-  const loading = false;
-  const error = null;
-  return [user, loading, error];
-};
-
-// Simulated logout function
-const logout = () => {
-  alert("Logged out");
-};
 
 const Navbar = () => {
-  const [user] = useAuthState();
   const [anchorEl, setAnchorEl] = createSignal<HTMLElement | null>(null);
   const [createOpened, setCreateOpened] = createSignal(false);
   const [joinOpened, setJoinOpened] = createSignal(false);
@@ -42,17 +29,11 @@ const Navbar = () => {
         <IconButton>
           <MenuIcon />
         </IconButton>
-        <span class="text-lg">EduHub</span>
-      </div>
+        <span class="text-lg" onclick={() => (window.location.href = "/dashboard")}>EduHub</span>
+      </div> 
       <div class="flex items-center">
         <IconButton onClick={handleClick}>
           <Add />
-        </IconButton>
-        <IconButton>
-          <Apps />
-        </IconButton>
-        <IconButton onClick={logout}>
-          <Avatar src={""} />
         </IconButton>
         <Menu
           anchorEl={anchorEl()}
