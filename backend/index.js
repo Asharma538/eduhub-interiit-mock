@@ -6,7 +6,7 @@ dotenv.config()
 
 const app = express()
 
-const PORT = 8000
+const PORT = process.env.PORT 
 const URI = process.env.MONGO_URI
 
 app.use(express.json())
