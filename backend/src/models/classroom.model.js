@@ -22,10 +22,6 @@ const classroomSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Announcement',
     }],
-    comments: [{
-        type: Schema.Types.ObjectId, 
-        ref: 'Comment'
-    }],
     assignments: [{
         type: Schema.Types.ObjectId, 
         ref: 'Assignment'
