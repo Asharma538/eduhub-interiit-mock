@@ -1,8 +1,8 @@
 import { createSignal } from "solid-js";
 import { Avatar, IconButton, MenuItem, Menu } from "@suid/material";
 import { Add, Apps, Menu as MenuIcon } from "@suid/icons-material";
-import CreateClass from "./CreateClass";
-import JoinClass from "./JoinClass";
+import CreateClass from "../Dashboard/CreateClass";
+import JoinClass from "../Dashboard/JoinClass";
 
 // Simulate user data for demonstration
 const useAuthState = () => {
@@ -33,15 +33,15 @@ const Navbar = () => {
 
   return (
     <nav class="w-full h-16 border-b border-gray-300 flex justify-between px-5 items-center">
+      <CreateClass
+        open={createOpened}
+        handleClose={() => setCreateOpened(false)}
+      />
+      <JoinClass open={joinOpened} handleClose={() => setJoinOpened(false)} />
       <div class="flex items-center">
         <IconButton>
           <MenuIcon />
         </IconButton>
-        <img
-          src="public/eduhub.png"
-          alt="EduHub Logo"
-          class="mx-5 h-7" // Adjust height as needed
-        />
         <span class="text-lg">EduHub</span>
       </div>
       <div class="flex items-center">
