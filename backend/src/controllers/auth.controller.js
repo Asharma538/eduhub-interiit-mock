@@ -1,6 +1,6 @@
-import User from '../models/userModel';
+import User from '../models/user.model.js';
 import axios from 'axios';
-import {oauth2Client} from '../config/googleConfig';
+import {oauth2Client} from '../utils/googleConfig.js';
 import jwt from 'jsonwebtoken';
 
 const googleLogin = async (req, res) => {
@@ -41,6 +41,6 @@ const googleLogin = async (req, res) => {
     }
 }
 
-module.exports = {
+export {
     googleLogin
 }
