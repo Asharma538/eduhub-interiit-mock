@@ -11,15 +11,6 @@ const announcementSchema = new Schema(
       type: String,
       required: true,
     },
-    group: {
-      type: String,
-      required: false,
-    },
-    class_id: {
-      type: Schema.Types.ObjectId,
-      ref: "Classroom",
-      required: true,
-    },
     created_date: {
       type: Date,
       default: Date.now,
@@ -29,10 +20,12 @@ const announcementSchema = new Schema(
       ref: "User",
       required: true,
     },
-    file_url: {
-      type: String,
-      required: false,
-    },
+    file_url: [
+      {
+        type: String,
+        required: false,
+      }
+    ],
     comments: [
       {
         type: Schema.Types.ObjectId,
