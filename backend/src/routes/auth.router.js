@@ -1,11 +1,7 @@
 import express from "express"
-import {googleLogin} from "../controllers/authController.js"
+import {googleLogin} from "../controllers/auth.controller.js"
 
 const router = express.Router()
-
-router.get("/test",(req,res)=>{
-    res.send("test")
-})
 
 router.get('/login',googleLogin)
 

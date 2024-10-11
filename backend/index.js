@@ -2,7 +2,7 @@ import express from "express"
 import mongoose from "mongoose"
 import cors from "cors"
 import dotenv from "dotenv"
-import authRouter from "./routes/authRouter.js"
+import authRouter from "./routes/auth.router.js"
 import cors from "cors"
 dotenv.config()
 
