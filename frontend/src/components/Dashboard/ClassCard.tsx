@@ -15,15 +15,15 @@ export interface ClassCardProps {
 }
 
 const ClassCard: Component<ClassCardProps> = (props) => {
-
-
   return (
     <div
       class="w-72 border border-gray-300 rounded-lg overflow-hidden cursor-pointer"
       style={props.style}
-
     >
-      <div class="bg-teal-700 h-24 text-white p-2 border-b border-gray-300 relative">
+      <div
+        class="bg-teal-700 h-24 text-white p-2 border-b border-gray-300 relative"
+        onClick={() => (window.location.href = `/class/${props.id}`)}
+      >
         <div class="font-semibold text-2xl">{props.name}</div>
         <div class="absolute bottom-3 text-sm">{props.creatorName}</div>
         <img
