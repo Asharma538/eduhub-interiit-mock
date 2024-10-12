@@ -7,8 +7,12 @@ import {
   DialogTitle,
   TextField,
 } from "@suid/material";
-import { createSignal } from "solid-js";
+import { Accessor, Component, createSignal, Show, Signal } from "solid-js";
 
+interface CreateClassProps {
+  open: Accessor<boolean>;
+  handleClose: () => void;
+}
 // Function to generate random data
 const generateRandomClass = () => {
   const classNames = [
@@ -23,14 +27,10 @@ const generateRandomClass = () => {
   return { uid: randomUID, className: randomName };
 };
 
-const CreateClass = () => {
-  const [open, setOpen] = createSignal(false); // Local state to manage dialog visibility
+const CreateClass: Component<CreateClassProps> = ({ open, handleClose }) => {
+  // Local state to manage dialog visibility
   const [className, setClassName] = createSignal(""); // State for class name
   const [randomUser, setRandomUser] = createSignal(generateRandomClass()); // Random user data
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const createClass = () => {
     console.log("UID:", randomUser().uid);
@@ -40,10 +40,7 @@ const CreateClass = () => {
   };
 
   return (
-    <div>
-      <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
-        Create Class
-      </Button>
+    <Show when={open}>
       <Dialog
         open={open()}
         onClose={handleClose}
@@ -73,7 +70,7 @@ const CreateClass = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Show>
   );
 };
 
