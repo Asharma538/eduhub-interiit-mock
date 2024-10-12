@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
-import {  IconButton, MenuItem, Menu } from "@suid/material";
-import { Add,  Menu as MenuIcon } from "@suid/icons-material";
+import { IconButton, MenuItem, Menu, Avatar } from "@suid/material"; // Import Avatar
+import { Add, Menu as MenuIcon } from "@suid/icons-material";
 import CreateClass from "../Dashboard/CreateClass";
 import JoinClass from "../Dashboard/JoinClass";
 
@@ -28,8 +28,10 @@ const Navbar = () => {
         <IconButton>
           <MenuIcon />
         </IconButton>
-        <span class="text-lg" onclick={() => (window.location.href = "/dashboard")}>EduHub</span>
-      </div> 
+        <span class="text-lg" onClick={() => (window.location.href = "/dashboard")}>
+          EduHub
+        </span>
+      </div>
       <div class="flex items-center">
         <IconButton onClick={handleClick}>
           <Add />
@@ -56,6 +58,11 @@ const Navbar = () => {
             Join Class
           </MenuItem>
         </Menu>
+
+        {/* User Profile Icon */}
+        <IconButton>
+          <Avatar alt="Ektedar" src="frontend\src\components\common\eduhub.png" />
+        </IconButton>
       </div>
     </nav>
   );
