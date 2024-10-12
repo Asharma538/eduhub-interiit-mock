@@ -3,11 +3,13 @@ import User from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asynchandler.js";
+import  Assignment  from "../models/assignment.model.js";
+import Announcement from "../models/anouncement.model.js";
+// import Announcement from "../models/announcement.model.js";
 
 export const joinClassroom = asyncHandler(async(req, res) => {
     const {code} =req.body;
     const userId=req.user._id;
-
 
     const classroom = await Classroom.findOne({invitation_code: code});
 
@@ -92,7 +94,6 @@ export const createClassroom = asyncHandler(async (req, res) => {
     }
 });
 
-
 export const getClasses = asyncHandler(async(req, res) => {
     const userId  = req.user._id;
 
@@ -115,8 +116,62 @@ export const getClasses = asyncHandler(async(req, res) => {
 
 export const getClassData= asyncHandler(async(req, res) => {});
 
-export const getClassWork= asyncHandler(async(req,res)=>{});
+// Controller to get classwork of a specific classroom
+export const getClassWork = asyncHandler(async(req,res)=>{
+    try {
+        // get the classroom id from the frontend
+        const classroomId = req.params.classId;
+        // Now get the classroom with the given id
+        const classroom = await Classroom.findById(classroomId);
 
-export const postAnnouncement=asyncHandler(async(req,res)=>{});
+        if(!classroom){
+            return res.status(404).json({message: "Class not found"});
+        }
 
+        // we need to fetch classwork associated with the classroom
+        const classwork = await Assignment.find({assignments: classroomId});
+
+        //return response as classwork as json response
+        res.status(200).json(classwork);
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server error ', error });
+    }
+});
+
+export const postAnnouncement=asyncHandler(async(req,res)=>{
+    try {
+        // get the classroom id from the frontend
+        const classroomId = req.params.classId;
+        // Now get the classroom with the given id
+        const classroom = await Classroom.findById(classroomId);
+
+        if(!classroom){
+            return res.status(404).json({message: "Class not found"});
+        }
+        
+        // get the user id from the request
+        const userId = req.user._id;
+
+        // get the title and content of the announcement from the frontend
+        const {title, content} = req.body;
+
+        // create a new announcement object using the defined schema
+        const announcement = new Announcement({
+            title,
+            content,
+            user_id: userId,
+            classroom_id: classroomId
+        });
+
+        await announcement.save();
+
+        //send the status
+        res.status(200).json({message: "Your announcement has been posted successfully", announcement});
+
+    }catch (error) {
+        // Step 8: Handle any errors
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
 export const postAssignment=asyncHandler(async(req,res)=>{});
