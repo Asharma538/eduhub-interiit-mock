@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { addStudent, addTeacher, getMembers} from "../controllers/member.controller.js";
-import { authenticateJWT } from "../middlewares/jwt.middleware.js";
+import authenticateJWT from "../middlewares/jwt.middleware.js";
 
 const router= Router();
 

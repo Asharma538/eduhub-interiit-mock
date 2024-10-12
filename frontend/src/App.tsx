@@ -3,6 +3,7 @@ import { createSignal, type Component } from "solid-js";
 import ClassCard from "./components/Dashboard/ClassCard";
 import Dashboard from "./routes/Dashboard";
 import Navbar from "./components/common/Navbar";
+import Assignment from "./Assignment/Assignment";
 import { Route, Router } from "@solidjs/router";
 
 import Class from "./routes/Class";
@@ -14,6 +15,7 @@ const App: Component = () => {
       <Router>
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/class/:id" component={Class} />
+        <Route path="/assignment/:id" component={Assignment} />
       </Router>
     </div>
   );

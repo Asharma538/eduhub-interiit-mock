@@ -4,7 +4,6 @@ import { Add,  Menu as MenuIcon } from "@suid/icons-material";
 import CreateClass from "../Dashboard/CreateClass";
 import JoinClass from "../Dashboard/JoinClass";
 
-
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = createSignal<HTMLElement | null>(null);
   const [createOpened, setCreateOpened] = createSignal(false);
