@@ -13,7 +13,7 @@ const userSettingsSchema = new Schema({
     }
 })
 
-const UserSetting = mongoose,model('UserSetting', userSettingsSchema);
+const UserSetting = mongoose.model('UserSetting', userSettingsSchema);
 
 export default UserSetting;
 
