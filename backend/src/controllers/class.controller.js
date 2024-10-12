@@ -121,6 +121,7 @@ export const getClassWork = asyncHandler(async(req,res)=>{
     try {
         // get the classroom id from the frontend
         const classroomId = req.params.classId;
+
         // Now get the classroom with the given id
         const classroom = await Classroom.findById(classroomId)
         
@@ -130,11 +131,29 @@ export const getClassWork = asyncHandler(async(req,res)=>{
         }
 
         // we need to fetch classwork associated with the classroom
-        const classwork_assignment = await Classroom.findById(classroomId).populate('announcements').populate('assignments');
-
+        const classwork = await Classroom.findById(classroomId)
+        .populate({
+            path: "announcements",
+            populate: [
+                {
+                    path: "user_id",
+                    select: "email display_name"
+                }
+            ]
+        })
+        .populate({
+            path: "assignments",
+            populate: [
+                {
+                    path: "user_id",
+                    select: "email display_name"
+                }
+            ]
+        }).select("assignments announcements");
 
         //return response as classwork as json response
         res.status(200).json(classwork);
+        
 
     } catch (error) {
         res.status(500).json({ message: 'Server error ', error });
