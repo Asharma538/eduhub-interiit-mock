@@ -1,24 +1,10 @@
 import { createSignal } from "solid-js";
-import { Avatar, IconButton, MenuItem, Menu } from "@suid/material";
-import { Add, Apps, Menu as MenuIcon } from "@suid/icons-material";
-import CreateClass from "./CreateClass";
-import JoinClass from "./JoinClass";
-
-// Simulate user data for demonstration
-const useAuthState = () => {
-  const user = { photoURL: "eduhub.png" }; // Simulated user data
-  const loading = false;
-  const error = null;
-  return [user, loading, error];
-};
-
-// Simulated logout function
-const logout = () => {
-  alert("Logged out");
-};
+import {  IconButton, MenuItem, Menu } from "@suid/material";
+import { Add,  Menu as MenuIcon } from "@suid/icons-material";
+import CreateClass from "../Dashboard/CreateClass";
+import JoinClass from "../Dashboard/JoinClass";
 
 const Navbar = () => {
-  const [user] = useAuthState();
   const [anchorEl, setAnchorEl] = createSignal<HTMLElement | null>(null);
   const [createOpened, setCreateOpened] = createSignal(false);
   const [joinOpened, setJoinOpened] = createSignal(false);
@@ -33,26 +19,20 @@ const Navbar = () => {
 
   return (
     <nav class="w-full h-16 border-b border-gray-300 flex justify-between px-5 items-center">
+      <CreateClass
+        open={createOpened}
+        handleClose={() => setCreateOpened(false)}
+      />
+      <JoinClass open={joinOpened} handleClose={() => setJoinOpened(false)} />
       <div class="flex items-center">
         <IconButton>
           <MenuIcon />
         </IconButton>
-        <img
-          src="public/eduhub.png"
-          alt="EduHub Logo"
-          class="mx-5 h-7" // Adjust height as needed
-        />
-        <span class="text-lg">EduHub</span>
-      </div>
+        <span class="text-lg" onclick={() => (window.location.href = "/dashboard")}>EduHub</span>
+      </div> 
       <div class="flex items-center">
         <IconButton onClick={handleClick}>
           <Add />
-        </IconButton>
-        <IconButton>
-          <Apps />
-        </IconButton>
-        <IconButton onClick={logout}>
-          <Avatar src={""} />
         </IconButton>
         <Menu
           anchorEl={anchorEl()}
