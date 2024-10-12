@@ -4,10 +4,6 @@ const Schema = mongoose.Schema;
 
 const toDoListSchema = new Schema(
     {
-        id:{
-            type: String,
-            required:true,
-        },
         assignments:[
             {
                 type:Schema.Types.ObjectId,
