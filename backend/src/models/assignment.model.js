@@ -5,9 +5,9 @@ const assignmentSchema = new Schema(
   {
     title: {
         type: String,
-        required: true,
+        required: true,                                                                                               
     },
-    description: {
+    description: {                                                                    
         type: String,
         required: false,
     },

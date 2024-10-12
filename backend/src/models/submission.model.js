@@ -13,15 +13,15 @@ const submissionSchema = new Schema({
         ref: 'Assignment',
         required: true
     },
-    submission_data:{
+    submission_date:{
         type: Date,
         required: true,
         default: Date.now
     },
-    file_url:{
+    file_url:[{
         type: String,
         required:true
-    },
+    }],
     content:{
         type: String,
         required: false
