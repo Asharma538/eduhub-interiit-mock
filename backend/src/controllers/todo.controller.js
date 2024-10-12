@@ -26,6 +26,6 @@ export const getToDo = asyncHandler(async(req,res)=>{
         });
         return res.status(200).json(new ApiResponse(200, separatedToDos,"fetched todo successfully"));
       } catch (error) {
-        return res.status(500).json(new ApiError(500,{},`error in getting todos ${error.message}`));
+        return res.status(500).json(new ApiError(500,`error in getting todos ${error.message}`));
       }
 });
