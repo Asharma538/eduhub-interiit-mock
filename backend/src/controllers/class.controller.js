@@ -114,3 +114,9 @@ export const getClasses = asyncHandler(async(req, res) => {
 });
 
 export const getClassData= asyncHandler(async(req, res) => {});
+
+export const getClassWork= asyncHandler(async(req,res)=>{});
+
+export const postAnnouncement=asyncHandler(async(req,res)=>{});
+
+export const postAssignment=asyncHandler(async(req,res)=>{});
