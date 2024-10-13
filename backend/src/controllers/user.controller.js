@@ -5,6 +5,7 @@ import { asyncHandler } from "../utils/asynchandler.js";
 import User from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import Assignment from "../models/assignment.model.js";
 
 export const getProfile=asyncHandler(async(req,res)=>{
     const userId=req.user._id;
@@ -125,3 +126,36 @@ export const getClasses = asyncHandler(async(req, res) => {
 
     res.status(200).json(new ApiResponse(200,classesData))
 });
+
+export const submitAssignment = asyncHandler(async(req, res) => {
+    const userId = req.user._id;
+    const { assignmentId, submission } = req.body;
+
+    const user = await User.findById(userId)
+    if (!user) {
+        throw new ApiError(404, "User not found")
+    }
+
+    const assignment = await Assignment.findById(assignmentId)
+    if (!assignment) {
+        throw new ApiError(404, "Assignment not found")
+    }
+
+    if(Classroom.teachers.includes(userId))
+    {
+        throw new ApiError(403, "You are not a student of this class")
+    }
+
+    const submissionData = {
+        user_id: userId,
+        assignment_id: assignmentId,
+        submission
+    }
+
+    assignment.submissions.push(submissionData)
+    await assignment.save()
+
+    res.status(200).json(new ApiResponse(200, {}, "Assignment submitted successfully"))
+
+});
+

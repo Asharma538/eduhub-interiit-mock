@@ -113,3 +113,34 @@ export const getMembers = asyncHandler(async(req, res) => {
     return res.status(500).json({ message: "Server error", error });
 }}
 );
+
+export const deleteMember = asyncHandler(async(req, res) => {
+    const classroomId  = req.params.classId;
+    const memberMail = req.params.memberMail;
+    const classroom = await Classroom.findById(classroomId);
+    if (!classroom) {
+        throw new ApiError(404, "Classroom not found");
+    }
+    
+    const member = await User.findOne({email: memberMail});
+    if (!member) {
+        throw new ApiError(404, "Member not found");
+    }
+
+    if (!classroom.teachers.includes(req.user._id)) {
+        throw new ApiError(403, "Only teachers can remove members");
+    }
+
+    if (!classroom.students.includes(member._id) && !classroom.teachers.includes(member._id)) {
+        throw new ApiError(404, "Member not found in this classroom");
+    }
+
+    classroom.students = classroom.students.filter(student => student != member._id);
+    classroom.teachers = classroom.teachers.filter(teacher => teacher != member._id);
+    await classroom.save();
+
+    await User.findByIdAndUpdate(member._id, {$pull: {classes: classroom._id}});
+
+    res.status(200).json(new ApiResponse(200, {}, "Member removed successfully"));
+
+});

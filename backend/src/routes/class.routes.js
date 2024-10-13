@@ -8,8 +8,6 @@ const router= Router();
 router.get('/',authenticateJWT, getClassData);
 
 router.get('/classwork',authenticateJWT, getClassWork);
-// route to get the classwork of a class
-router.get('/classwork', authenticateJWT, getClassWork);
 
 // route to post an announcement in a class
 router.post('/postAnnouncement',authenticateJWT, postAnnouncement);

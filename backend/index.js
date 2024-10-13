@@ -5,7 +5,8 @@ import dotenv from "dotenv"
 import authRouter from "./src/routes/auth.routes.js"
 import classRouter from "./src/routes/class.routes.js"
 import memberRouter from "./src/routes/member.routes.js"
-import assignmentRoutes from './src/routes/assignment.routes.js'
+import assignmentRouter from './src/routes/assignment.routes.js'
+import userRouter from "./src/routes/user.routes.js"
 
 dotenv.config()
 
@@ -20,7 +21,9 @@ app.use(express.json())
 app.use(authRouter)
 app.use('/classes/:classId',classRouter)
 app.use('/classes/:classId',memberRouter)
-app.use('/classes/:classId',assignmentRoutes);
+app.use('/classes/:classId',assignmentRouter)
+app.use(userRouter)
+
 
 mongoose.connect(URL)
 .then(()=>{

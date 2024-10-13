@@ -1,5 +1,3 @@
-import Assignment from "../models/assignment.model.js";
-import Announcement from "../models/anouncement.model.js";
 import Classroom from "../models/classroom.model.js";
 import Comment from "../models/comment.model.js";
 import User from "../models/user.model.js";
@@ -117,7 +115,68 @@ export const getClassWork = asyncHandler(async(req,res)=>{
     }
 });
 
-export const postAnnouncement=asyncHandler(async(req,res)=>{});
+export const postAnnouncement=asyncHandler(async(req,res)=>{
+
+});
+
+export const deleteClass=asyncHandler(async(req,res)=>{
+    const userId = req.user._id
+    const classId = req.params.classId
+
+    const user = await User.findById(userId)
+    if(!user)
+    {
+        throw new ApiError(404,"User not found")
+    }
+
+    const classroom = await Classroom.findById(classId)
+    if(!classroom)
+    {
+        throw new ApiError(404,"Classroom not found")
+    }
+
+    if(!classroom.teachers.includes(userId))
+    {
+        throw new ApiError(403, "You are not a teacher of this class")
+    }
+
+    await classroom.delete()
+    res.status(200).json(new ApiResponse(200,{},"Class deleted successfully"));
+});
+
+export const deleteAnnouncement=asyncHandler(async(req,res)=>{
+    const userId = req.user._id
+    const classId = req.params.classId
+    const announcementId = req.params.announcementId
+
+    const user = await User.findById(userId)
+    if(!user)
+    {
+        throw new ApiError(404,"User not found")
+    }
+
+    const classroom = await Classroom.findById(classId)
+    if(!classroom)
+    {
+        throw new ApiError(404,"Classroom not found")
+    }
+
+    if(!classroom.teachers.includes(userId))
+    {
+        throw new ApiError(403, "You are not a teacher of this class")
+    }
+
+    const announcement = await Announcement.findById(announcementId)
+    if(!announcement)
+    {
+        throw new ApiError(404,"Announcement not found")
+    }
+
+    await announcement.delete()
+    res.status(200).json(new ApiResponse(200,{},"Announcement deleted successfully"));
+});
+
+
 
 
 
