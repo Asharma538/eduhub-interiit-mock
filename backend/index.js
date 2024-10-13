@@ -19,11 +19,10 @@ const URL = process.env.MONGO_URL
 app.use(cors())
 app.use(express.json())
 app.use(authRouter)
+app.use(userRouter)
 app.use('/classes/:classId',classRouter)
 app.use('/classes/:classId',memberRouter)
 app.use('/classes/:classId',assignmentRouter)
-app.use(userRouter)
-
 
 mongoose.connect(URL)
 .then(()=>{

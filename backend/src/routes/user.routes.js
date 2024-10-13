@@ -13,3 +13,5 @@ router.get('/classes', authenticateJWT, getClasses);
 router.get('/profile',authenticateJWT,getProfile);
 
 router.post('/submitAssignment',authenticateJWT,submitAssignment);
+
+export default router;
