@@ -2,15 +2,16 @@ import { Router } from "express";
 import { getClassData, getClassWork, postAnnouncement, deleteClass, deleteAnnouncement} from "../controllers/class.controller.js";
 import authenticateJWT  from "../middlewares/jwt.middleware.js";
 
-const router= Router();
+const router = Router({ mergeParams: true });
 
 
-router.get('/',authenticateJWT, getClassData);
+router.get('/:classId',authenticateJWT, getClassData);
 
-router.get('/classwork',authenticateJWT, getClassWork);
+// route to get the classwork of a class
+router.get('/:classId/classwork', authenticateJWT, getClassWork);
 
 // route to post an announcement in a class
-router.post('/postAnnouncement',authenticateJWT, postAnnouncement);
+router.post('/:classId/announcements/post',authenticateJWT, postAnnouncement);
 
 router.delete('/deleteClass',authenticateJWT, deleteClass);
 
