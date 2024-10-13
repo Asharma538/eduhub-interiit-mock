@@ -40,13 +40,15 @@ export const postAssignment=asyncHandler(async(req,res)=>{
     const savedClassroom= classroom.assignments.push(savedAssignment._id)
     await classroom.save()
 
-    res.status(200).json(new ApiResponse(200, {savedClassroom},"Announcemented posted successfully"))
+    res.status(200).json(new ApiResponse(200, {savedClassroom},"Assignment posted successfully"))
 });
 
 export const getAssignment=asyncHandler(async(req,res)=>{
     const userId = req.user._id
     const assignmentId = req.params.assignmentId
     const classId = req.params.classId
+
+    console.log(req.params)
 
     const user = await User.findById(userId)
     if(!user)
@@ -68,13 +70,43 @@ export const getAssignment=asyncHandler(async(req,res)=>{
     const assignment = await Assignment.findById(assignmentId)
     .populate([
         {
-            
+            path:"user_id",
+            select:"email display_name"
+        },
+        {
+            path:"comments",
+            select:"content",
+            populate:{
+                path:"user_id",
+                select:"email, display_name"
+            }
         }
     ])
+
     if(!assignment)
     {
         throw new ApiError(404,"Assignment not found")
     }
+    console.log(assignment);
+
+    const assignmentData = {
+        title: assignment.title,
+        description: assignment.description,
+        deadline: assignment.deadline,
+        file_url: assignment.file_url,
+        created_date: assignment.createdAt,  // Assuming this is the creation date
+        created_by: assignment.user_id.display_name,  // Accessing user display name from the populated field
+        comments: assignment.comments.map(comment => ({
+            content: comment.content,
+            user_id: {
+                display_name: comment.user_id.display_name,  // Correct reference to comment's user
+                email: comment.user_id.email  // Correct reference to comment's user email
+            }
+        }))
+    };
+    
+
+    res.status(200).json(new ApiResponse(200,{assignmentData},"assignment retrieved successfully"));
 
 
 })
