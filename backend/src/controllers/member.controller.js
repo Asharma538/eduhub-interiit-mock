@@ -27,11 +27,11 @@ export const addStudent = asyncHandler(async (req, res) => {
     }
 
     if (classroom.students.includes(student._id)) {
-        throw new ApiError(400, "You are already a member of this classroom");
+        throw new ApiError(400, "User is already a student in this classroom");
     }
 
     if (classroom.teachers.includes(student._id)) {
-        throw new ApiError(400, "You are already a member of this classroom");
+        throw new ApiError(400, "User is already a teacher in this classroom");
     }
 
     classroom.students.push(student._id);
@@ -65,11 +65,11 @@ export const addTeacher = asyncHandler(async (req, res) => {
     }
 
     if (classroom.students.includes(teacher._id)) {
-        throw new ApiError(400, "You are already a member of this classroom");
+        throw new ApiError(400, "User is already a student in this classroom");
     }
 
     if (classroom.teachers.includes(teacher._id)) {
-        throw new ApiError(400, "You are already a member of this classroom");
+        throw new ApiError(400, "User is already a teacher in this classroom");
     }
 
     classroom.teachers.push(teacher._id);
