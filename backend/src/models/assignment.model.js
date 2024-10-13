@@ -3,15 +3,11 @@ const Schema = mongoose.Schema;
 
 const assignmentSchema = new Schema(
   {
-    id: {
-      type: String,
-      required: true,
-    },
     title: {
         type: String,
-        required: true,
+        required: true,                                                                                               
     },
-    description: {
+    description: {                                                                    
         type: String,
         required: false,
     },
