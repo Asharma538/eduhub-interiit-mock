@@ -32,6 +32,9 @@ app.use(userRouter);
 app.use("/classes/:classId", classRouter);
 app.use("/classes/:classId", memberRouter);
 app.use("/classes/:classId", assignmentRouter);
+app.use("/classes/:classId", commentRouter);
+app.use(todoRouter);
+
 
 mongoose.connect(URL)
   .then(() => {
