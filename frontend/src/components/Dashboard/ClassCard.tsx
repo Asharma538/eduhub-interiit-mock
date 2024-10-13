@@ -5,7 +5,7 @@ import {
   AssignmentIndOutlined,
 } from "@suid/icons-material";
 
-import { Component, JSX } from "solid-js";
+import { Component, JSX, createSignal, onMount } from "solid-js";
 
 export interface ClassCardProps {
   name: string;
@@ -15,9 +15,16 @@ export interface ClassCardProps {
   style?: JSX.CSSProperties;
 }
 import { A } from "@solidjs/router";
+import {useAxiosContext} from "./lib/useAxiosContext.tsx"
 
-
-
+// Define the props for Classcard
+export interface ClassCardProps{
+  name: string;
+  creatorName: string;
+  creatorPhoto: string;
+  id: string;
+  style?: JSX.CSSProperties;
+}
 const ClassCard: Component<ClassCardProps> = (props) => {
   return (
     <div
@@ -37,7 +44,7 @@ const ClassCard: Component<ClassCardProps> = (props) => {
         />
       </div>
       <div>
-         <h2>Class Name</h2>
+         <h2>{props.name}</h2>
          <A href="/assignment/assignment">View Assignment</A> {/* Link to assignment page */}
       </div>
       <div class="h-48 border-b border-gray-300"></div>
@@ -53,5 +60,8 @@ const ClassCard: Component<ClassCardProps> = (props) => {
     
   );
 };
+
+// main code that uses Axios to fetch the class data
+
 
 export default ClassCard;

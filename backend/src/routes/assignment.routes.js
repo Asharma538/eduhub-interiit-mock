@@ -1,12 +1,11 @@
 import express from 'express';
-import { postAssignment ,getAssignment, postSubmission, deleteAssignment} from '../controllers/assignment.controller.js';
+import { postAssignment ,getAssignment} from '../controllers/assignment.controller.js';
 import authenticateJWT from '../middlewares/jwt.middleware.js';
 
 const router = express.Router()
 
 router.get('/postAssignment',authenticateJWT, postAssignment);
 router.get('/:assignmentId',authenticateJWT,getAssignment);
-router.post('/:assignmentId',authenticateJWT,postSubmission);
 
-router.delete('/:assignmentId',authenticateJWT,deleteAssignment)
+
 export default router

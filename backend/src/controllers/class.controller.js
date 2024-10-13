@@ -1,5 +1,4 @@
-import Assignment from "../models/assignment.model.js";
-import Announcement from "../models/anouncement.model.js";
+
 import Classroom from "../models/classroom.model.js";
 import Comment from "../models/comment.model.js";
 import User from "../models/user.model.js";
