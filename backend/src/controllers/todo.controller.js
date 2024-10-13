@@ -6,7 +6,8 @@ import { ApiError } from "../utils/ApiError.js";
 
 export const getToDo = asyncHandler(async(req,res)=>{
     try {
-        const toDoLists = await ToDoList.find().populate('assignments');
+        const userId  = req.user._id;
+        const toDoLists=await Assignment.find({user_id:userId});
         if(!toDoLists) throw new ApiError(404,"no assignment found");
         const separatedToDos = toDoLists.map(ele => {
           const withDeadline = [];
