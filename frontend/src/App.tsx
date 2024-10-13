@@ -10,6 +10,8 @@ import People from "./components/People";
 import Class from "./routes/Class";
 import { AxiosProvider } from "./lib/useAxiosContext";
 import axios, { InternalAxiosRequestConfig } from "axios";
+import ToDoSidebar from "./components/ToDoSidebar";
+import Classwork from "./components/Classwork";
 
 const App: Component = () => {
   const axiosInstance = axios.create({
@@ -28,6 +30,9 @@ const App: Component = () => {
   );
 
   return (
+    <div class="flex h-screen">
+      <ToDoSidebar class="w-64 bg-gray-200" /> {/* Sidebar with width and background color */}
+      <div class="flex flex-col flex-grow">
     <div>
       <Navbar />
       <AxiosProvider axiosInstance={axiosInstance}>
