@@ -5,8 +5,7 @@ import dotenv from "dotenv"
 import authRouter from "./src/routes/auth.routes.js"
 import classRouter from "./src/routes/class.routes.js"
 import memberRouter from "./src/routes/member.routes.js"
-import userRouter from "./src/routes/user.routes.js"
-import todoRouter from "./src/routes/todo.routes.js"    
+import assignmentRoutes from './src/routes/assignment.routes.js'
 
 dotenv.config()
 
@@ -19,10 +18,9 @@ const URL = process.env.MONGO_URL
 app.use(cors())
 app.use(express.json())
 app.use(authRouter)
-app.use(classRouter)
-app.use(memberRouter)
-app.use(todoRouter)
-app.use(userRouter)
+app.use('/classes/:classId',classRouter)
+app.use('/classes/:classId',memberRouter)
+app.use('/classes/:classId',assignmentRoutes);
 
 mongoose.connect(URL)
 .then(()=>{
