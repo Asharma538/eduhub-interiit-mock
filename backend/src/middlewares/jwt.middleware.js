@@ -22,6 +22,9 @@ const authenticateJWT = async (req, res, next) => {
             req.user = user;
             next(); // Continue to the next middleware
         } catch (err) {
+            if (err.name === 'TokenExpiredError') {
+                return res.status(401).json({ message: 'Token has expired' }); // 401 if the token is expired
+            }
             console.error(err);
             return res.sendStatus(403); // Forbidden if token verification fails
         }

@@ -14,4 +14,8 @@ router.get('/profile',authenticateJWT,getProfile);
 
 router.post('/submitAssignment',authenticateJWT,submitAssignment);
 
+router.get("/verify", authenticateJWT, (req, res) => {
+    res.sendStatus(200);
+  });
+  
 export default router;
