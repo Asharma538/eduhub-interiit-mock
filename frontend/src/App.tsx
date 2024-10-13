@@ -9,13 +9,23 @@ import GoogleLogin from "./components/GoogleLogin";
 import People from "./components/People";
 import Class from "./routes/Class";
 import { AxiosProvider } from "./lib/useAxiosContext";
-import axios from "axios";
+import axios, { InternalAxiosRequestConfig } from "axios";
 
 const App: Component = () => {
   const axiosInstance = axios.create({
     baseURL: "http://localhost:8000",
     withCredentials: true,
   });
+
+  axiosInstance.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+      const token = localStorage.getItem("jwtToken");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    }
+  );
 
   return (
     <div>

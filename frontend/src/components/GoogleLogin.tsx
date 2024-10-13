@@ -19,14 +19,19 @@ const handleCredentialResponse = (
   console.log(backend_url + "/login");
 
   axios
-    .post("/login", {}, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ` + token,
-      },
-    })
+    .post(
+      "/login",
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ` + token,
+        },
+      }
+    )
     .then((res) => {
-      console.log(res.data);
+      const { jwtToken } = res.data;
+      localStorage.setItem("jwtToken", jwtToken);
       navigate("/dashboard");
     })
     .catch((err) => {
