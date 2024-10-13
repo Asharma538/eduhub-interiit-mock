@@ -36,10 +36,10 @@ const assignmentSchema = new Schema(
         ref: "Comment",
       },
     ],
-    submission: {
+    submissions: [{
         type: Schema.Types.ObjectId,
         ref: "Submission",
-    }
+    }]
   },
   { timestamps: true }
 );
