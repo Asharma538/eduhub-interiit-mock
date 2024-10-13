@@ -1,9 +1,13 @@
 import { Router } from "express";
 import authenticateJWT from "../middlewares/jwt.middleware.js";
-import { getProfile } from "../controllers/user.controller.js";
+import { getProfile, joinClassroom, createClassroom, getClasses, } from "../controllers/user.controller.js";
 
 const router= Router()
 
-router.get('/profile',getProfile)
+router.post('/join', authenticateJWT ,joinClassroom);
 
-export default router;
+router.post('/create', authenticateJWT,createClassroom);
+
+router.get('/classes', authenticateJWT, getClasses);
+
+router.get('/profile',authenticateJWT,getProfile)
