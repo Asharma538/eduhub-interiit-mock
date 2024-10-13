@@ -44,6 +44,14 @@ const GoogleLogin: Component = () => {
   const navigate = useNavigate();
   const axios = useAxiosContext();
   onMount(() => {
+
+    axios!.get("/verify").then((res) => {
+      if(res.status == 200){
+        navigate("/dashboard");
+      }
+    })
+
+
     // @ts-expect-error
     window.google?.accounts.id.initialize({
       client_id:
