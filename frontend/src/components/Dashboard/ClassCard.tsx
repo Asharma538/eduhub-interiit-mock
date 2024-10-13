@@ -5,7 +5,7 @@ import {
   AssignmentIndOutlined,
 } from "@suid/icons-material";
 
-import { Component, JSX } from "solid-js";
+import { Component, JSX, createSignal, onMount } from "solid-js";
 
 export interface ClassCardProps {
   name: string;
@@ -15,9 +15,13 @@ export interface ClassCardProps {
   style?: JSX.CSSProperties;
 }
 import { A } from "@solidjs/router";
+import {useAxiosContext} from "./lib/useAxiosContext.tsx"
 
-
-
+// Define the props for Classcard
+export interface ClassCardProps{
+  name: string,
+  
+}
 const ClassCard: Component<ClassCardProps> = (props) => {
   return (
     <div

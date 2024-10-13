@@ -9,12 +9,18 @@ import GoogleLogin from "./components/GoogleLogin";
 import People from "./components/People";
 import Class from "./routes/Class";
 import { AxiosProvider } from "./lib/useAxiosContext";
+import axios from "axios";
 
 const App: Component = () => {
+  const axiosInstance = axios.create({
+    baseURL: "http://localhost:8000",
+    withCredentials: true,
+  });
+
   return (
     <div>
       <Navbar />
-      <AxiosProvider>
+      <AxiosProvider axiosInstance={axiosInstance}>
         <Router>
           <Route path="/" component={GoogleLogin} />
           <Route path="/dashboard" component={Dashboard} />
