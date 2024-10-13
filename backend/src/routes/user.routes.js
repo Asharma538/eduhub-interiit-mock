@@ -4,4 +4,6 @@ import { getProfile } from "../controllers/user.controller.js";
 
 const router= Router()
 
-router.get('/profile',authenticateJWT,getProfile)
+router.get('/profile',getProfile)
+
+export default router;
