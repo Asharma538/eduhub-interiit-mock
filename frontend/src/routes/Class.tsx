@@ -2,6 +2,8 @@ import { createSignal, For } from "solid-js";
 import { IconButton } from "@suid/material";
 import SendOutlinedIcon from "@suid/icons-material/SendOutlined";
 import moment from "moment";
+import { A } from "@solidjs/router";
+
 
 function Class() {
   const [announcementContent, setAnnouncementContent] = createSignal("");
@@ -44,11 +46,15 @@ function Class() {
         </h1>
       </div>
 
-      {/* Tabs: Stream, Classwork, People */}
+     {/* Tabs: Stream, Classwork, People */}
       <div class="flex justify-center space-x-8 mt-6">
         <button class="border-b-2 border-blue-500 font-semibold">Stream</button>
-        <button class="text-gray-500">Classwork</button>
-        <button class="text-gray-500">People</button>
+        <A href="/classwork" class="text-gray-500">
+          Classwork
+        </A>
+        <A href="/people" class="text-gray-500">
+          People
+        </A>
       </div>
 
       {/* Upcoming Section */}

@@ -6,7 +6,6 @@ const router = express.Router()
 
 router.get('/postAssignment',authenticateJWT, postAssignment);
 router.get('/:assignmentId',authenticateJWT,getAssignment);
-// router.post('/:assignmentId',authenticateJWT,postSubmission);
+router.delete('/:assignmentId',authenticateJWT,deleteAssignment);
 
-router.delete('/:assignmentId',authenticateJWT,deleteAssignment)
 export default router

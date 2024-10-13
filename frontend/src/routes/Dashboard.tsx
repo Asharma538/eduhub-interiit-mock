@@ -3,6 +3,8 @@ import ClassCard from "../components/Dashboard/ClassCard";
 import { ClassCardProps } from "../components/Dashboard/ClassCard";
 import { classCardsData } from "../data/ClassCardData";
 
+import { useAxiosContext } from "../lib/useAxiosContext";
+
 const Dashboard = () => {
   const [loading, setLoading] = createSignal(true);
   const [classes, setClasses] = createSignal<ClassCardProps[]>([]);

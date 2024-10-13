@@ -1,6 +1,6 @@
 // src/components/People.tsx
 
-import { createSignal, onMount } from "solid-js";
+import { Component, createSignal, JSX, onMount } from "solid-js";
 import axios from "axios";
 
 interface Member {
@@ -50,7 +50,7 @@ const People = (props: PeopleProps): JSX.Element => {
       await axios.post(`/api/classrooms/${props.classId}/students`, { studentMail: newStudentEmail() });
       setNewStudentEmail("");
       await fetchMembers();
-    } catch (err) {
+    } catch (err:any) {
       setError(err.response?.data?.message || "Error adding student");
     }
   };
@@ -60,7 +60,7 @@ const People = (props: PeopleProps): JSX.Element => {
       await axios.post(`/api/classrooms/${props.classId}/teachers`, { teacherMail: newTeacherEmail() });
       setNewTeacherEmail("");
       await fetchMembers();
-    } catch (err) {
+    } catch (err:any) {
       setError(err.response?.data?.message || "Error adding teacher");
     }
   };
@@ -73,7 +73,7 @@ const People = (props: PeopleProps): JSX.Element => {
       <h3 class="text-xl font-semibold mb-2">Teachers</h3>
       <ul class="mb-4">
         {teachers().map((teacher) => (
-          <li key={teacher.email} class="mb-2">
+          <li  class="mb-2">
             {teacher.display_name} - <span class="text-gray-600">{teacher.email}</span>
           </li>
         ))}
@@ -92,7 +92,7 @@ const People = (props: PeopleProps): JSX.Element => {
       <h3 class="text-xl font-semibold mb-2">Students</h3>
       <ul class="mb-4">
         {students().map((student) => (
-          <li key={student.email} class="mb-2">
+          <li  class="mb-2">
             {student.display_name} - <span class="text-gray-600">{student.email}</span>
           </li>
         ))}

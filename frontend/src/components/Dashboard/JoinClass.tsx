@@ -9,6 +9,7 @@ import {
 } from "@suid/material";
 import { Accessor, Component, createSignal, Show } from "solid-js";
 
+
 interface JoinClassProps {
   open: Accessor<boolean>;
   handleClose: () => void;
