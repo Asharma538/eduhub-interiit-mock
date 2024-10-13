@@ -1,8 +1,8 @@
 import Classroom from "../models/classroom.model.js";
 import User from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
-import { asyncHandler } from "../utils/asynchandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asynchandler.js";
 import Assignment from "../models/assignment.model.js";
 
 export const getProfile=asyncHandler(async(req,res)=>{
