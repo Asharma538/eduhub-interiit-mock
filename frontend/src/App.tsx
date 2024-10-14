@@ -11,6 +11,7 @@ import Class from "./routes/Class";
 import { AxiosProvider } from "./lib/useAxiosContext";
 import axios, { InternalAxiosRequestConfig } from "axios";
 import { Toaster } from "solid-toast";
+import AnnouncementsList from "./components/Class/Announcements";
 
 const App: Component = () => {
   const axiosInstance = axios.create({
@@ -35,11 +36,13 @@ const App: Component = () => {
         <AxiosProvider axiosInstance={axiosInstance}>
           <Toaster />
           <Navbar />
+          <AnnouncementsList />
           <Router>
             <Route path="/" component={GoogleLogin} />
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/class/:id" component={Class} />
             <Route path="/assignment/:id" component={Assignment} />
+            <Route path={"/people/class/:id"} component={People} />
           </Router>
         </AxiosProvider>
       </div>

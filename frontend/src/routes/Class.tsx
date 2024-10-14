@@ -2,11 +2,12 @@ import { createSignal, For } from "solid-js";
 import { IconButton } from "@suid/material";
 import SendOutlinedIcon from "@suid/icons-material/SendOutlined";
 import moment from "moment";
-import { A } from "@solidjs/router";
+import { A, useNavigate } from "@solidjs/router";
 
 
 function Class() {
   const [announcementContent, setAnnouncementContent] = createSignal("");
+  const navigate = useNavigate()
   const [posts, setPosts] = createSignal([
     {
       authorId: "user123",
@@ -52,9 +53,11 @@ function Class() {
         <A href="/classwork" class="text-gray-500">
           Classwork
         </A>
-        <A href="/people" class="text-gray-500">
+        <span class="text-gray-500" onClick={() =>{
+          navigate("/people/class/")
+        }}>
           People
-        </A>
+        </span>
       </div>
 
       {/* Upcoming Section */}
