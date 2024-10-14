@@ -39,7 +39,7 @@ export const postAssignment=asyncHandler(async(req,res)=>{
     if (assignmentDeadline < currentDate) {
         throw new ApiError(400, "The deadline cannot be in the past. Please choose a valid future date.");
     }
-    
+
     const newAssignment = new Assignment({
         title,
         description,
@@ -193,9 +193,9 @@ export const submitAssignment = asyncHandler(async(req, res) => {
 
     const classroom = await Classroom.findById(classId)
 
-    if(classroom.teachers.includes(userId))
-    {
-        throw new ApiError(403, "You are not a student of this class")
+    const isStudent = classroom.students.includes(userId);
+    if (!isStudent) {
+        throw new ApiError(403, "User is not a student in this classroom");
     }
 
     const submission = new Submission({
@@ -211,4 +211,86 @@ export const submitAssignment = asyncHandler(async(req, res) => {
 
     res.status(200).json(new ApiResponse(200, {}, "Assignment submitted successfully"))
 
+});
+
+export const getSubmission = asyncHandler(async (req, res) => {
+    const userId = req.user._id; // Authenticated user
+    const assignmentId = req.params.assignmentId; // Assignment ID from request parameters
+    const classId = req.params.classId; // Class ID from request parameters
+
+    // Validate user existence
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    // Validate assignment and class existence
+    const classroom = await Classroom.findById(classId);
+    if (!classroom) {
+        throw new ApiError(404, "Classroom not found");
+    }
+
+    const assignment = await Assignment.findById(assignmentId);
+    if (!assignment) {
+        throw new ApiError(404, "Assignment not found");
+    }
+
+    // Check if the user is a member of the class (student or teacher)
+    const isStudent = classroom.students.includes(userId);
+    if (!isStudent) {
+        throw new ApiError(403, "User is not a student in this classroom");
+    }
+
+    // Check if the user has made a submission
+    const submission = await Submission.findOne({ assignment_id: assignmentId, student_id: userId });
+    if (!submission) {
+        throw new ApiError(404, "No submission found for this user");
+    }
+
+    // Return the user's submission
+    res.status(200).json(new ApiResponse(200, submission, "Submission retrieved successfully"));
+});
+
+
+export const getSubmissions = asyncHandler(async (req, res) => {
+    const userId = req.user._id; // Authenticated user (teacher)
+    const assignmentId = req.params.assignmentId; // Assignment ID from request parameters
+    const classId = req.params.classId; // Class ID from request parameters
+
+    // Validate user existence
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    // Validate classroom existence
+    const classroom = await Classroom.findById(classId);
+    if (!classroom) {
+        throw new ApiError(404, "Classroom not found");
+    }
+
+    // Validate assignment existence
+    const assignment = await Assignment.findById(assignmentId).populate('submissions');
+    if (!assignment) {
+        throw new ApiError(404, "Assignment not found");
+    }
+
+    // Check if the user is a teacher in the class
+    const isTeacher = classroom.teachers.includes(userId);
+    if (!isTeacher) {
+        throw new ApiError(403, "Only teachers can view submissions for this assignment");
+    }
+
+    // Check if the assignment has submissions
+    if (assignment.submissions.length === 0) {
+        throw new ApiError(404, "No submissions found for this assignment");
+    }
+
+    // Fetch all submissions for the assignment and populate the user details
+    const submissions = await Submission.find({
+        _id: { $in: assignment.submissions }
+    }).populate('student_id', 'display_name email');
+
+    // Return all submissions
+    res.status(200).json(new ApiResponse(200, submissions, "Submissions retrieved successfully"));
 });
