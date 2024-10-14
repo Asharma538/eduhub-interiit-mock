@@ -31,18 +31,18 @@ const App: Component = () => {
 
   return (
     <div class="flex h-screen">
-      <ToDoSidebar class="w-64 bg-gray-200" /> {/* Sidebar with width and background color */}
+      {/* Sidebar with width and background color */}
       <div class="flex flex-col flex-grow">
-    <div>
-      <Navbar />
-      <AxiosProvider axiosInstance={axiosInstance}>
-        <Router>
-          <Route path="/" component={GoogleLogin} />
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/class/:id" component={Class} />
-          <Route path="/assignment/:id" component={Assignment} />
-        </Router>
-      </AxiosProvider>
+        <Navbar />
+        <AxiosProvider axiosInstance={axiosInstance}>
+          <Router>
+            <Route path="/" component={GoogleLogin} />
+            <Route path="/dashboard" component={Dashboard} />
+            <Route path="/class/:id" component={Class} />
+            <Route path="/assignment/:id" component={Assignment} />
+          </Router>
+        </AxiosProvider>
+      </div>
     </div>
   );
 };
