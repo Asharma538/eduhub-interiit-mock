@@ -24,6 +24,11 @@ const assignmentSchema = new Schema(
       ref: "User",
       required: true,
     },
+    class_id:{
+      type:Schema.Types.ObjectId,
+      ref:"Classroom",
+      required: true,
+    },
     file_url: [
       {
         type: String,
