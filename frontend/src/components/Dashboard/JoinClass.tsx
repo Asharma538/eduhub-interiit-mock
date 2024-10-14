@@ -8,7 +8,8 @@ import {
   TextField,
 } from "@suid/material";
 import { Accessor, Component, createSignal, Show } from "solid-js";
-
+import toast from "solid-toast";
+import { useAxiosContext } from "../../lib/useAxiosContext";
 
 interface JoinClassProps {
   open: Accessor<boolean>;
@@ -23,9 +24,19 @@ const JoinClass: Component<JoinClassProps> = ({
 }: JoinClassProps) => {
   // Local state for dialog visibility
   const [classId, setClassId] = createSignal(""); // State for class ID
+  const axios = useAxiosContext();
 
   const joinClass = async () => {
-
+    axios!
+      .post("/join", { code: classId() })
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success("Class joined successfully.Please Refresh");
+        }
+      })
+      .catch((err) => {
+        toast.error(err.response?.data?.message || "Error joining class");
+      });
   };
 
   return (
