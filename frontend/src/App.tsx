@@ -40,7 +40,7 @@ const App: Component = () => {
           <Router>
             <Route path="/" component={GoogleLogin} />
             <Route path="/dashboard" component={Dashboard} />
-            <Route path="/class/:id" component={Class} />
+            <Route path="/class/:classId" component={Class} />
             <Route path="/assignment/:id" component={Assignment} />
             <Route path={"/people/class/:id"} component={People} />
           </Router>

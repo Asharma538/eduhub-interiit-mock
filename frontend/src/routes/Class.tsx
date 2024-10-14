@@ -1,39 +1,61 @@
-import { createSignal, For } from "solid-js";
+import { createSignal, For, createEffect } from "solid-js";
 import { IconButton } from "@suid/material";
 import SendOutlinedIcon from "@suid/icons-material/SendOutlined";
 import moment from "moment";
-import { A, useNavigate } from "@solidjs/router";
-
+import { A, useParams } from "@solidjs/router";
+import { useAxiosContext } from "../lib/useAxiosContext";
+import toast from "solid-toast";
 
 function Class() {
+  const axios = useAxiosContext();
+  const { classId } = useParams(); // Get classId from URL parameters
+  const [className, setClassName] = createSignal("Loading...");
   const [announcementContent, setAnnouncementContent] = createSignal("");
-  const navigate = useNavigate()
-  const [posts, setPosts] = createSignal([
-    {
-      authorId: "user123",
-      content: "Welcome to the class!",
-      date: moment().format("MMM Do YY"),
-      image: "https://via.placeholder.com/50",
-      name: "Poushali Nandi",
-    },
-  ]);
-  const [user] = createSignal({
-    uid: "user123",
+  const [posts, setPosts] = createSignal([]);
+
+  const user = {
+    uid: "user123", // Replace with actual user ID fetching logic
     photoURL: "https://via.placeholder.com/50",
     displayName: "My Name",
+  };
+
+  // Function to fetch class details and announcements from the backend
+  const fetchClassDetails = async () => {
+    try {
+      const response = await axios!.get(`/classes/${classId}`);
+      setClassName(response.data.data.classroom.name || "No Class Name Available");
+      setPosts(response.data.data.announcements || []); // Set posts from announcements
+    } catch (error) {
+      console.error("Error fetching class details:", error);
+      toast.error("Failed to fetch class details");
+    }
+  };
+
+  // Call fetchClassDetails when the component mounts or after an update
+  createEffect(() => {
+    fetchClassDetails();
   });
 
-  const createPost = () => {
+  // Function to create a new post (announcement)
+  const createPost = async () => {
     if (announcementContent().trim() !== "") {
-      const newPost = {
-        authorId: user().uid,
-        content: announcementContent(),
-        date: moment().format("MMM Do YY"),
-        image: user().photoURL,
-        name: user().displayName,
-      };
-      setPosts([newPost, ...posts()]);
-      setAnnouncementContent("");
+      try {
+        // POST the new announcement to the backend
+        const response = await axios!.post(`/classes/${classId}/announcements`, {
+          content: announcementContent(),
+        });
+
+        // Clear the input after posting
+        setAnnouncementContent(""); 
+        toast.success("Announcement created successfully");
+
+        // Fetch the updated list of announcements from the backend
+        fetchClassDetails();
+
+      } catch (error) {
+        console.error("Error posting announcement:", error);
+        toast.error("Failed to post announcement");
+      }
     }
   };
 
@@ -41,23 +63,20 @@ function Class() {
     <div class="w-full max-w-6xl mx-auto mt-8">
       {/* Class header section */}
       <div class="relative bg-teal-600 rounded-lg h-48 flex items-center justify-center">
-     
         <h1 class="relative text-white text-3xl font-semibold">
-          Introduction to Profession
+          {className()}
         </h1>
       </div>
 
-     {/* Tabs: Stream, Classwork, People */}
+      {/* Tabs: Stream, Classwork, People */}
       <div class="flex justify-center space-x-8 mt-6">
         <button class="border-b-2 border-blue-500 font-semibold">Stream</button>
         <A href="/classwork" class="text-gray-500">
           Classwork
         </A>
-        <span class="text-gray-500" onClick={() =>{
-          navigate("/people/class/")
-        }}>
+        <A href="/people" class="text-gray-500">
           People
-        </span>
+        </A>
       </div>
 
       {/* Upcoming Section */}
@@ -75,7 +94,7 @@ function Class() {
           {/* Announcement input */}
           <div class="bg-white shadow-md rounded-lg p-4 mb-4 flex items-center">
             <img
-              src={user().photoURL}
+              src={user.photoURL}
               alt="User"
               class="h-12 w-12 rounded-full mr-4"
             />
@@ -97,15 +116,23 @@ function Class() {
               {(post) => (
                 <div class="bg-white shadow-md rounded-lg p-4 flex items-start space-x-4">
                   <img
-                    src={post.image}
+                    src="https://via.placeholder.com/50"
                     alt="User"
                     class="h-12 w-12 rounded-full"
                   />
                   <div>
                     <div class="text-sm text-gray-500">
-                      {post.name} • {post.date}
+                      {post.user_id.display_name} • {moment(post.date).fromNow()}
                     </div>
                     <p class="mt-2 text-gray-800">{post.content}</p>
+                    {/* Display any file URLs (if available) */}
+                    {post.file_url.length > 0 && (
+                      <div class="mt-2">
+                        {post.file_url.map((file) => (
+                          <a href={file} target="_blank" class="text-blue-500 underline">View File</a>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
