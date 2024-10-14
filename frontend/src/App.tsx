@@ -56,9 +56,9 @@ const App: Component = () => {
             <Route path="/" component={GoogleLogin} />
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/class/:classId" component={Class} />
-            <Route path="/classwork/:classId" component={Classwork} />
-            <Route path="/assignment/:id" component={Assignment} />
-            <Route path={"/people/class/:id"} component={People} />
+            <Route path="/class/:classId/classwork" component={Classwork} />
+            <Route path="/assignment/:classId" component={Assignment} />
+            <Route path={"/class/:classId/people"} component={People} />
           </Router>
         </AxiosProvider>
       </div>

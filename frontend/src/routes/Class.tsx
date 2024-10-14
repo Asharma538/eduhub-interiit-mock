@@ -72,10 +72,10 @@ function Class() {
       {/* Tabs: Stream, Classwork, People */}
       <div class="flex justify-center space-x-8 mt-6">
         <button class="border-b-2 border-blue-500 font-semibold">Stream</button>
-        <A href="/classwork" class="text-gray-500">
+        <A href="/class/${classId}/classwork" class="text-gray-500">
           Classwork
         </A>
-        <A href="/people" class="text-gray-500">
+        <A href="/class/${classId}/people" class="text-gray-500">
           People
         </A>
       </div>
