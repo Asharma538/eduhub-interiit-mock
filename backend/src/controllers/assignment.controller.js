@@ -29,6 +29,17 @@ export const postAssignment=asyncHandler(async(req,res)=>{
         throw new ApiError(403, "You are not a memeber of this class")
     }
 
+    const currentDate = new Date();
+    const assignmentDeadline = new Date(deadline);
+
+    if (isNaN(assignmentDeadline)) {
+        throw new ApiError(400, "Invalid deadline format. Please provide a valid ISO 8601 date string.");
+    }
+
+    if (assignmentDeadline < currentDate) {
+        throw new ApiError(400, "The deadline cannot be in the past. Please choose a valid future date.");
+    }
+    
     const newAssignment = new Assignment({
         title,
         description,
