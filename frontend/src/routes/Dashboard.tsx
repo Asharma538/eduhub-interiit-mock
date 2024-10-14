@@ -5,16 +5,25 @@ import { classCardsData } from "../data/ClassCardData";
 
 import { useAxiosContext } from "../lib/useAxiosContext";
 
+interface GetClasses {
+  id: string;
+  name: string;
+  details: string;
+  teacher: string;
+}
+
 const Dashboard = () => {
   const [loading, setLoading] = createSignal(true);
-  const [classes, setClasses] = createSignal<ClassCardProps[]>([]);
-
+  const [classes, setClasses] = createSignal<GetClasses[]>([]);
+  const axios = useAxiosContext();
   // Simulate loading and data fetch (replace with actual API call)
   createEffect(() => {
-    setTimeout(() => {
-      setClasses(classCardsData);
+    axios!.get("/classes").then((response) => {
+      console.log(response.data);
+
+      setClasses(response.data.data);
       setLoading(false);
-    }, 2000);
+    });
   });
 
   return (
@@ -29,8 +38,8 @@ const Dashboard = () => {
         <div class="flex flex-wrap w-screen p-7">
           {classes().map((individualClass) => (
             <ClassCard
-              creatorName={individualClass.creatorName}
-              creatorPhoto={individualClass.creatorPhoto}
+              details={individualClass.details}
+              creatorName={individualClass.teacher}
               name={individualClass.name}
               id={individualClass.id}
               style={{ "margin-right": "30px", "margin-bottom": "30px" }}
