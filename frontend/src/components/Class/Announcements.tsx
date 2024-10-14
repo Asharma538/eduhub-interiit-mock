@@ -1,6 +1,6 @@
 import { IconButton } from "@suid/material";
 import MoreVertIcon from "@suid/icons-material/MoreVert";
-import { Component } from "solid-js";
+import { Component, createSignal } from "solid-js";
 
 // Announcement props interface
 interface AnnouncementProps {
@@ -19,6 +19,9 @@ const AnnouncementCard: Component<AnnouncementProps> = ({
   content,
   authorId,
 }) => {
+
+  const [showOptions , setShowOptions] = createSignal(false);
+
   return (
     <div class="w-full p-6 border border-gray-300 rounded-lg mb-5">
       <div class="flex items-center justify-between">
@@ -35,10 +38,19 @@ const AnnouncementCard: Component<AnnouncementProps> = ({
             <div class="text-sm text-gray-600 mt-1">{date}</div>
           </div>
         </div>
-        <div>
-          <IconButton>
+        <div class="relative">
+          <IconButton onClick={() => setShowOptions(!showOptions())}>
             <MoreVertIcon />
           </IconButton>
+          {showOptions() && (
+            <div class="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg">
+              <ul>
+                <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer whitespace-nowrap">
+                  Delete Announcement
+                </li>
+              </ul>
+            </div>
+          )}
         </div>
       </div>
       <div class="mt-4">{content}</div>
@@ -81,25 +93,24 @@ function AnnouncementsList() {
             authorId={ann.authorId}
           />
           {/* Assignment Section */}
-         
-{ann.assignment && (
-  <div class="border-t border-gray-200 pt-4 mt-4">
-    <h3 class="text-xl font-medium">
-      Assignment: {ann.assignment.title}
-    </h3>
-    <p class="text-gray-500 mb-2">
-      <strong>Due Date:</strong> {ann.assignment.dueDate}
-    </p>
-    <p class="text-gray-500 mb-4">{ann.assignment.details}</p>
-    <a
-      href={"/assignment/assignment"}
-      class="text-blue-500 hover:underline"
-    >
-      View Assignment
-    </a>
-  </div>
-)}
 
+          {ann.assignment && (
+            <div class="border-t border-gray-200 pt-4 mt-4">
+              <h3 class="text-xl font-medium">
+                Assignment: {ann.assignment.title}
+              </h3>
+              <p class="text-gray-500 mb-2">
+                <strong>Due Date:</strong> {ann.assignment.dueDate}
+              </p>
+              <p class="text-gray-500 mb-4">{ann.assignment.details}</p>
+              <a
+                href={"/assignment/assignment"}
+                class="text-blue-500 hover:underline"
+              >
+                View Assignment
+              </a>
+            </div>
+          )}
         </div>
       ))}
     </div>
