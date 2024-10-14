@@ -1,5 +1,7 @@
+import { content } from "googleapis/build/src/apis/content/index.js";
 import Assignment from "../models/assignment.model.js";
 import Classroom from "../models/classroom.model.js";
+import Submission from "../models/submission.model.js";
 import User from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -32,7 +34,8 @@ export const postAssignment=asyncHandler(async(req,res)=>{
         description,
         file_url,
         deadline,
-        user_id: userId
+        user_id: userId,
+        class_id:classId
     })
 
     const savedAssignment =  await newAssignment.save();
@@ -40,7 +43,7 @@ export const postAssignment=asyncHandler(async(req,res)=>{
     const savedClassroom= classroom.assignments.push(savedAssignment._id)
     await classroom.save()
 
-    res.status(200).json(new ApiResponse(200, {savedClassroom},"Assignment posted successfully"))
+    res.status(200).json(new ApiResponse(200, savedAssignment._id,"Assignment posted successfully"))
 });
 
 export const getAssignment=asyncHandler(async(req,res)=>{
@@ -48,7 +51,7 @@ export const getAssignment=asyncHandler(async(req,res)=>{
     const assignmentId = req.params.assignmentId
     const classId = req.params.classId
 
-    console.log(req.params)
+    // console.log(req.params,userId)
 
     const user = await User.findById(userId)
     if(!user)
@@ -64,7 +67,7 @@ export const getAssignment=asyncHandler(async(req,res)=>{
 
     if(!classroom.teachers.includes(userId) && !classroom.students.includes(userId))
     {
-        throw new ApiError(403, "You are not a memeber of this class")
+        throw new ApiError(403, "You are not a member of this class")
     }
 
     const assignment = await Assignment.findById(assignmentId)
@@ -78,7 +81,7 @@ export const getAssignment=asyncHandler(async(req,res)=>{
             select:"content",
             populate:{
                 path:"user_id",
-                select:"email, display_name"
+                select:"email display_name"
             }
         }
     ])
@@ -87,9 +90,10 @@ export const getAssignment=asyncHandler(async(req,res)=>{
     {
         throw new ApiError(404,"Assignment not found")
     }
-    console.log(assignment);
+    // console.log(assignment);
 
     const assignmentData = {
+        id:assignment._id,
         title: assignment.title,
         description: assignment.description,
         deadline: assignment.deadline,
@@ -130,7 +134,7 @@ export const deleteAssignment=asyncHandler(async(req,res)=>{
 
     if(!classroom.teachers.includes(userId) && !classroom.students.includes(userId))
     {
-        throw new ApiError(403, "You are not a memeber of this class")
+        throw new ApiError(403, "You are not a member of this class")
     }
 
     if(classroom.students.includes(userId))
@@ -138,32 +142,62 @@ export const deleteAssignment=asyncHandler(async(req,res)=>{
         throw new ApiError(403, "You are not allowed to delete the assignment")
     }
 
-    const assignment = await Assignment.findById (assignmentId)
+
+    const assignment = await Assignment.findById(assignmentId).populate("submissions").populate("comments")
     if(!assignment)
     {
         throw new ApiError(404,"Assignment not found")
     }
 
-    const submissions = await Assignment.findById(assignmentId).populate("submission")
-    if(!submissions)
-    {
-        throw new ApiError(404,"Submissions not found")
-    }
-    submissions.map(async(submission)=>{
+    assignment.submissions.map(async(submission)=>{
         await submission.deleteOne()
     })
 
-    const comments = await Assignment.findById(assignmentId).populate("comments")
-    if(!comments)
-    {
-        throw new ApiError(404,"No comments")
-    }
-
-    comments.map(async(comment)=>{
+    assignment.comments.map(async(comment)=>{
         await comment.deleteOne()
     })
+
+    await Classroom.findByIdAndUpdate(classId, { $pull: { assignments: assignmentId } });
 
     await assignment.deleteOne()
     res.status(200).json(new ApiResponse(200, {},"Assignment deleted successfully"))
 
 })
+
+export const submitAssignment = asyncHandler(async(req, res) => {
+    const userId = req.user._id;
+    const {assignmentId,classId} = req.params
+    const { file_url } = req.body;
+    
+    // console.log(userId,req.params,file_url)
+    const user = await User.findById(userId)
+    if (!user) {
+        throw new ApiError(404, "User not found")
+    }
+
+    const assignment = await Assignment.findById(assignmentId)
+    if (!assignment) {
+        throw new ApiError(404, "Assignment not found")
+    }
+
+    const classroom = await Classroom.findById(classId)
+
+    if(classroom.teachers.includes(userId))
+    {
+        throw new ApiError(403, "You are not a student of this class")
+    }
+
+    const submission = new Submission({
+        student_id: userId,
+        assignment_id: assignmentId,
+        file_url:file_url,
+    });
+
+    const savedSubmission = await submission.save();
+
+    assignment.submissions.push(savedSubmission._id)
+    await assignment.save()
+
+    res.status(200).json(new ApiResponse(200, {}, "Assignment submitted successfully"))
+
+});
