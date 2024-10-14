@@ -4,6 +4,6 @@ import {getToDo} from "../controllers/todo.controller.js"
 
 const router= Router()
 
-router.get('/todo',getToDo)
+router.get('/todo',authenticateJWT,getToDo)
 
 export default router;
