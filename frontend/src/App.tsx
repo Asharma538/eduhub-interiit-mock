@@ -12,8 +12,15 @@ import { AxiosProvider } from "./lib/useAxiosContext";
 import axios, { InternalAxiosRequestConfig } from "axios";
 import { Toaster } from "solid-toast";
 import AnnouncementsList from "./components/Class/Announcements";
+import { AuthProvider, UserDetails } from "./lib/useAuthContext";
 
 const App: Component = () => {
+  const [auth, setAuth] = createSignal<UserDetails>({
+    _id: "",
+    email: "",
+    display_name: "",
+  });
+
   const axiosInstance = axios.create({
     baseURL: "http://localhost:8000",
     withCredentials: true,
@@ -29,20 +36,30 @@ const App: Component = () => {
     }
   );
 
+  axiosInstance.get("/profile").then((res) => {
+   
+    const { _id, email, display_name } = res.data.data;
+    setAuth({ _id, email, display_name });
+    console.log(auth());
+    
+  });
+
   return (
     <div class="flex h-screen">
       {/* Sidebar with width and background color */}
       <div class="flex flex-col flex-grow">
         <AxiosProvider axiosInstance={axiosInstance}>
-          <Toaster />
-          <Navbar />
-          <Router>
-            <Route path="/" component={GoogleLogin} />
-            <Route path="/dashboard" component={Dashboard} />
-            <Route path="/class/:classId" component={Class} />
-            <Route path="/assignment/:id" component={Assignment} />
-            <Route path={"/people/class/:id"} component={People} />
-          </Router>
+          <AuthProvider auth={auth}>
+            <Toaster />
+            <Navbar />
+            <Router>
+              <Route path="/" component={GoogleLogin} />
+              <Route path="/dashboard" component={Dashboard} />
+              <Route path="/class/:id" component={Class} />
+              <Route path="/assignment/:id" component={Assignment} />
+              <Route path={"/people/class/:id"} component={People} />
+            </Router>
+          </AuthProvider>
         </AxiosProvider>
       </div>
     </div>
