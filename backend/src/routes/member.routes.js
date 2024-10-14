@@ -9,7 +9,7 @@ router.post('/add/teacher', authenticateJWT,addTeacher);
 
 router.get('/', authenticateJWT, getMembers);
 
-router.delete('/delete/:membermail', authenticateJWT, deleteMember);
+router.delete('/', authenticateJWT, deleteMember);
 
 
 export default router;
