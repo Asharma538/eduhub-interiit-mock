@@ -10,8 +10,7 @@ import People from "./components/People";
 import Class from "./routes/Class";
 import { AxiosProvider } from "./lib/useAxiosContext";
 import axios, { InternalAxiosRequestConfig } from "axios";
-import ToDoSidebar from "./components/ToDoSidebar";
-import Classwork from "./components/Classwork";
+import { Toaster } from "solid-toast";
 
 const App: Component = () => {
   const axiosInstance = axios.create({
@@ -33,8 +32,9 @@ const App: Component = () => {
     <div class="flex h-screen">
       {/* Sidebar with width and background color */}
       <div class="flex flex-col flex-grow">
-        <Navbar />
         <AxiosProvider axiosInstance={axiosInstance}>
+          <Toaster />
+          <Navbar />
           <Router>
             <Route path="/" component={GoogleLogin} />
             <Route path="/dashboard" component={Dashboard} />

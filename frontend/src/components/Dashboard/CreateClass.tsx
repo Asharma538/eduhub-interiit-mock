@@ -8,34 +8,37 @@ import {
   TextField,
 } from "@suid/material";
 import { Accessor, Component, createSignal, Show, Signal } from "solid-js";
+import { useAxiosContext } from "../../lib/useAxiosContext";
+import { nanoid } from "nanoid";
+import toast from "solid-toast";
 
 interface CreateClassProps {
   open: Accessor<boolean>;
   handleClose: () => void;
 }
 // Function to generate random data
-const generateRandomClass = () => {
-  const classNames = [
-    "Math 101",
-    "History of Art",
-    "Biology Basics",
-    "Physics Advanced",
-    "Chemistry Experiments",
-  ];
-  const randomName = classNames[Math.floor(Math.random() * classNames.length)];
-  const randomUID = Math.random().toString(36).substring(2, 15);
-  return { uid: randomUID, className: randomName };
-};
 
 const CreateClass: Component<CreateClassProps> = ({ open, handleClose }) => {
   // Local state to manage dialog visibility
   const [className, setClassName] = createSignal(""); // State for class name
-  const [randomUser, setRandomUser] = createSignal(generateRandomClass()); // Random user data
+  const [classDetails, setClassDetails] = createSignal(""); // Random user data
+  const axios = useAxiosContext();
 
   const createClass = () => {
-    console.log("UID:", randomUser().uid);
-    console.log("Class Name:", className() || randomUser().className);
-    // Logic to store or display the class information
+    axios!
+      .post("/create", {
+        name: className(),
+        invitation_code: nanoid(),
+        details: classDetails(),
+      })
+      .then((data) => {
+        if (data.status === 201) {
+          toast.success("Class created successfully");
+        }
+      })
+      .catch((err) => {
+        toast.error(err.response?.data?.message || "Error creating class");
+      });
     handleClose(); // Close dialog after creation
   };
 
@@ -59,6 +62,15 @@ const CreateClass: Component<CreateClassProps> = ({ open, handleClose }) => {
             fullWidth
             value={className()}
             onChange={(e) => setClassName(e.target.value)}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Class Details"
+            type="text"
+            fullWidth
+            value={classDetails()}
+            onChange={(e) => setClassDetails(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
