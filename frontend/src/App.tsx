@@ -13,6 +13,7 @@ import axios, { InternalAxiosRequestConfig } from "axios";
 import { Toaster } from "solid-toast";
 import AnnouncementsList from "./components/Class/Announcements";
 import { AuthProvider, UserDetails } from "./lib/useAuthContext";
+import Classwork from "./components/Classwork";
 
 const App: Component = () => {
   const [auth, setAuth] = createSignal<UserDetails>({
@@ -49,17 +50,16 @@ const App: Component = () => {
       {/* Sidebar with width and background color */}
       <div class="flex flex-col flex-grow">
         <AxiosProvider axiosInstance={axiosInstance}>
-          <AuthProvider auth={auth}>
-            <Toaster />
-            <Navbar />
-            <Router>
-              <Route path="/" component={GoogleLogin} />
-              <Route path="/dashboard" component={Dashboard} />
-              <Route path="/class/:classId" component={Class} />
-              <Route path="/assignment/:id" component={Assignment} />
-              <Route path={"/people/class/:id"} component={People} />
-            </Router>
-          </AuthProvider>
+          <Toaster />
+          <Navbar />
+          <Router>
+            <Route path="/" component={GoogleLogin} />
+            <Route path="/dashboard" component={Dashboard} />
+            <Route path="/class/:classId" component={Class} />
+            <Route path="/classwork/:classId" component={Classwork} />
+            <Route path="/assignment/:id" component={Assignment} />
+            <Route path={"/people/class/:id"} component={People} />
+          </Router>
         </AxiosProvider>
       </div>
     </div>

@@ -67,6 +67,7 @@ function Class() {
           {className()}
         </h1>
       </div>
+      
 
       {/* Tabs: Stream, Classwork, People */}
       <div class="flex justify-center space-x-8 mt-6">
