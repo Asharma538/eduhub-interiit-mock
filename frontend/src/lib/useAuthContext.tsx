@@ -1,4 +1,4 @@
-import { createContext, JSX, useContext } from "solid-js";
+import { Accessor, createContext, JSX, useContext } from "solid-js";
 
 export interface UserDetails {
   _id: string;
@@ -6,15 +6,11 @@ export interface UserDetails {
   display_name: string;
 }
 
-const AuthContext = createContext<UserDetails>({
-  _id: "",
-  email: "",
-  display_name: "",
-});
+const AuthContext = createContext<Accessor<UserDetails>>();
 
 export function AuthProvider(props: {
   children: JSX.Element;
-  auth: UserDetails;
+  auth: Accessor<UserDetails>;
 }) {
   return (
     <AuthContext.Provider value={props.auth}>

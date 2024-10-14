@@ -37,8 +37,11 @@ const App: Component = () => {
   );
 
   axiosInstance.get("/profile").then((res) => {
+   
     const { _id, email, display_name } = res.data.data;
     setAuth({ _id, email, display_name });
+    console.log(auth());
+    
   });
 
   return (
@@ -46,7 +49,7 @@ const App: Component = () => {
       {/* Sidebar with width and background color */}
       <div class="flex flex-col flex-grow">
         <AxiosProvider axiosInstance={axiosInstance}>
-          <AuthProvider auth={auth()}>
+          <AuthProvider auth={auth}>
             <Toaster />
             <Navbar />
             <Router>
