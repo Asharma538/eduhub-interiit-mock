@@ -36,7 +36,6 @@ const App: Component = () => {
         <AxiosProvider axiosInstance={axiosInstance}>
           <Toaster />
           <Navbar />
-          <AnnouncementsList />
           <Router>
             <Route path="/" component={GoogleLogin} />
             <Route path="/dashboard" component={Dashboard} />
