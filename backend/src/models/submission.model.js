@@ -21,11 +21,7 @@ const submissionSchema = new Schema({
     file_url:[{
         type: String,
         required:true
-    }],
-    content:{
-        type: String,
-        required: false
-    }
+    }]
 })
 
 const Submission = mongoose.model('Submission', submissionSchema);
