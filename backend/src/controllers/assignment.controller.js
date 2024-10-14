@@ -7,54 +7,56 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asynchandler.js";
 
-export const postAssignment=asyncHandler(async(req,res)=>{
+export const postAssignment = asyncHandler(async (req, res) => {
     const userId = req.user._id;
-    const {title, description, file_url ,deadline}=req.body;
-    const classId = req.params.classId
+    const { title, description, file_url, deadline } = req.body;
+    const classId = req.params.classId;
 
-    const user = await User.findById(userId)
-    if(!user)
-    {
-        throw new ApiError(404,"User not found")
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new ApiError(404, "User not found");
     }
 
-    const classroom = await Classroom.findById(classId)
-    if(!classroom)
-    {
-        throw new ApiError(404,"Classroom not found")
+    const classroom = await Classroom.findById(classId);
+    if (!classroom) {
+        throw new ApiError(404, "Classroom not found");
     }
 
-    if(!classroom.teachers.includes(userId) && !classroom.students.includes(userId))
-    {
-        throw new ApiError(403, "You are not a memeber of this class")
+    if (!classroom.teachers.includes(userId) && !classroom.students.includes(userId)) {
+        throw new ApiError(403, "You are not a member of this class");
     }
 
-    const currentDate = new Date();
-    const assignmentDeadline = new Date(deadline);
+    // Check if the deadline is provided and valid
+    let assignmentDeadline = null; // Default to null if no deadline is provided
 
-    if (isNaN(assignmentDeadline)) {
-        throw new ApiError(400, "Invalid deadline format. Please provide a valid ISO 8601 date string.");
-    }
+    if (deadline) {
+        assignmentDeadline = new Date(deadline);
+        const currentDate = new Date();
 
-    if (assignmentDeadline < currentDate) {
-        throw new ApiError(400, "The deadline cannot be in the past. Please choose a valid future date.");
+        if (isNaN(assignmentDeadline)) {
+            throw new ApiError(400, "Invalid date format. Please provide a valid deadline.");
+        }
+
+        if (assignmentDeadline < currentDate) {
+            throw new ApiError(400, "The deadline cannot be in the past. Please choose a valid future date.");
+        }
     }
 
     const newAssignment = new Assignment({
         title,
         description,
         file_url,
-        deadline,
+        deadline: assignmentDeadline, // Set the deadline to null if not provided or invalid
         user_id: userId,
-        class_id:classId
-    })
+        class_id: classId
+    });
 
-    const savedAssignment =  await newAssignment.save();
+    const savedAssignment = await newAssignment.save();
 
-    const savedClassroom= classroom.assignments.push(savedAssignment._id)
-    await classroom.save()
+    classroom.assignments.push(savedAssignment._id);
+    await classroom.save();
 
-    res.status(200).json(new ApiResponse(200, savedAssignment._id,"Assignment posted successfully"))
+    res.status(200).json(new ApiResponse(200, savedAssignment._id, "Assignment posted successfully"));
 });
 
 export const getAssignment=asyncHandler(async(req,res)=>{
