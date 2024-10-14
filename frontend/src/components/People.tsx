@@ -10,7 +10,7 @@ interface Member {
 }
 
 const People = (): JSX.Element => {
-  const { id } = useParams();
+  const { classId } = useParams();
   const [teachers, setTeachers] = createSignal<Member[]>([]);
   const [students, setStudents] = createSignal<Member[]>([]);
   const [newStudentEmail, setNewStudentEmail] = createSignal("");
@@ -22,7 +22,7 @@ const People = (): JSX.Element => {
 
   const fetchMembers = async () => {
     try {
-      const response = await axios!.get(`classes/${id}/members`);
+      const response = await axios!.get(`classes/${classId}/members`);
       setTeachers(response.data.teachers);
       setStudents(response.data.students);
       setLoading(false);
@@ -49,7 +49,7 @@ const People = (): JSX.Element => {
   });
   const addStudent = async () => {
     try {
-      await axios!.post(`classes/${id}/members/add/student`, {
+      await axios!.post(`classes/${classId}/members/add/student`, {
         studentMail: newStudentEmail(),
       });
       setNewStudentEmail("");
@@ -73,7 +73,7 @@ const People = (): JSX.Element => {
 
   const deleteMember = async (email: string) => {
     try {
-      await axios!.delete(`/classes/${id}/members`, {
+      await axios!.delete(`/classes/${classId}/members`, {
         data: {
           memberMail: email,
         },
