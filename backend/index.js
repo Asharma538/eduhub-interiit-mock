@@ -10,6 +10,7 @@ import assignmentRouter from './src/routes/assignment.routes.js';
 import commentRouter from './src/routes/comment.routes.js';
 import todoRouter from './src/routes/todo.routes.js';
 import announcementRouter from './src/routes/announcement.routes.js';
+import errorHandler from "./src/middlewares/errorhandler.middleware.js";
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use("/classes/:classId/assignments", assignmentRouter);
 app.use("/classes/:classId/announcements", announcementRouter);
 app.use("/classes/:classId", commentRouter);
 app.use(todoRouter);
+app.use(errorHandler);
 
 
 mongoose.connect(URL)
