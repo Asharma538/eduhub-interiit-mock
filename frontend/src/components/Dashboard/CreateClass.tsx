@@ -28,7 +28,6 @@ const CreateClass: Component<CreateClassProps> = ({ open, handleClose }) => {
     axios!
       .post("/create", {
         name: className(),
-        invitation_code: nanoid(),
         details: classDetails(),
       })
       .then((data) => {
