@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/asynchandler.js";
 import Classroom from "../models/classroom.model.js";
 
 export const addStudent = asyncHandler(async (req, res) => {
-    const classId  = req.params.classId;
+    const classId = req.params.classId;
     const { studentMail } = req.body;
     // console.log(classId)
 
@@ -21,29 +21,29 @@ export const addStudent = asyncHandler(async (req, res) => {
         throw new ApiError(403, "Only teachers can add new members");
     }
 
-    const student = await User.findOne({email:studentMail});
+    const student = await User.findOne({ email: studentMail });
     if (!student) {
         throw new ApiError(404, "Student not found");
     }
 
     if (classroom.students.includes(student._id)) {
-        throw new ApiError(400, "You are already a member of this classroom");
+        throw new ApiError(400, "User is already a student in this classroom");
     }
 
     if (classroom.teachers.includes(student._id)) {
-        throw new ApiError(400, "You are already a member of this classroom");
+        throw new ApiError(400, "User is already a teacher in this classroom");
     }
 
     classroom.students.push(student._id);
     await classroom.save();
 
-    await User.findByIdAndUpdate(student._id, {$addToSet:{classes: classroom._id}});
+    await User.findByIdAndUpdate(student._id, { $addToSet: { classes: classroom._id } });
     res.status(200).json(new ApiResponse(200, {}, "Successfully joined the classroom"));
 
 });
 
 export const addTeacher = asyncHandler(async (req, res) => {
-    const classId  = req.params.classId;
+    const classId = req.params.classId;
     const { teacherMail } = req.body;
     // console.log(classId)
 
@@ -59,70 +59,97 @@ export const addTeacher = asyncHandler(async (req, res) => {
         throw new ApiError(403, "Only teachers can add new members");
     }
 
-    const teacher = await User.findOne({email:teacherMail});
+    const teacher = await User.findOne({ email: teacherMail });
     if (!teacher) {
         throw new ApiError(404, "Teacher not found");
     }
 
     if (classroom.students.includes(teacher._id)) {
-        throw new ApiError(400, "You are already a member of this classroom");
+        throw new ApiError(400, "User is already a student in this classroom");
     }
 
     if (classroom.teachers.includes(teacher._id)) {
-        throw new ApiError(400, "You are already a member of this classroom");
+        throw new ApiError(400, "User is already a teacher in this classroom");
     }
 
     classroom.teachers.push(teacher._id);
     await classroom.save();
 
-    await User.findByIdAndUpdate(teacher._id, {$addToSet:{classes: classroom._id}});
+    await User.findByIdAndUpdate(teacher._id, { $addToSet: { classes: classroom._id } });
     res.status(200).json(new ApiResponse(200, {}, "Successfully joined the classroom"));
 
 });
 
-export const getMembers = asyncHandler(async(req, res) => {
+export const getMembers = asyncHandler(async (req, res) => {
     try {
-    const classroomId  = req.params.classId;
-    const classroom = await Classroom.findById(classroomId)
-        .populate('teachers', 'display_name email') 
-        .populate('students', 'display_name email');
-    if (!classroom) {
-        return res.status(404).json({
+        const classroomId = req.params.classId;
+        const userId = req.user._id; // Get the authenticated user's ID
+
+        // Validate if the classroomId is a valid MongoDB ObjectId
+
+        // Find the classroom and populate teachers and students
+        const classroom = await Classroom.findById(classroomId)
+            .populate('teachers', 'display_name email')
+            .populate('students', 'display_name email');
+
+        // Check if the classroom exists
+        if (!classroom) {
+            return res.status(404).json({
+                success: false,
+                message: "Classroom not found"
+            });
+        }
+
+        // Check if the user is a member of the class (either teacher or student)
+        const isTeacher = classroom.teachers.some(teacher => teacher._id.equals(userId));
+        const isStudent = classroom.students.some(student => student._id.equals(userId));
+
+        if (!isTeacher && !isStudent) {
+            throw new ApiError(403, "You are not a member of this class");
+        }
+
+        // Handle empty teachers or students list
+        const teachers = classroom.teachers.length > 0
+            ? classroom.teachers.map(teacher => ({
+                email: teacher.email,
+                display_name: teacher.display_name
+            }))
+            : [];
+
+        const students = classroom.students.length > 0
+            ? classroom.students.map(student => ({
+                email: student.email,
+                display_name: student.display_name
+            }))
+            : [];
+
+        // Return success response with teachers and students
+        return res.status(200).json({
+            success: true,
+            teachers,
+            students
+        });
+
+    } catch (error) {
+        console.error("Error fetching classroom members:", error);
+        return res.status(500).json({
             success: false,
-            message: "Classroom not found"
-        })
+            message: "Server error",
+            error: error.message
+        });
     }
+});
 
-    const teachers = classroom.teachers.map(teacher => ({
-        email: teacher.email,
-        display_name: teacher.display_name
-    }));
-
-    const students = classroom.students.map(student => ({
-        email: student.email,
-        display_name: student.display_name
-    }));
-
-    return res.status(200).json({
-        success: true,
-        teachers,
-        students
-    });
-} catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Server error", error });
-}}
-);
-
-export const deleteMember = asyncHandler(async(req, res) => {
-    const classroomId  = req.params.classId;
-    const memberMail = req.params.memberMail;
+export const deleteMember = asyncHandler(async (req, res) => {
+    const classroomId = req.params.classId;
+    const {memberMail} = req.body;
+    
     const classroom = await Classroom.findById(classroomId);
     if (!classroom) {
         throw new ApiError(404, "Classroom not found");
     }
-    
-    const member = await User.findOne({email: memberMail});
+
+    const member = await User.findOne({ email: memberMail });
     if (!member) {
         throw new ApiError(404, "Member not found");
     }
@@ -135,11 +162,17 @@ export const deleteMember = asyncHandler(async(req, res) => {
         throw new ApiError(404, "Member not found in this classroom");
     }
 
-    classroom.students = classroom.students.filter(student => student != member._id);
-    classroom.teachers = classroom.teachers.filter(teacher => teacher != member._id);
+    //CHECK WHY NOT WORKING
+    // classroom.students = classroom.students.filter(student => student != member._id);
+    // classroom.teachers = classroom.teachers.filter(teacher => teacher != member._id);
+
+    classroom.students = classroom.students.filter(student => !student.equals(member._id));
+    classroom.teachers = classroom.teachers.filter(teacher => !teacher.equals(member._id));
+
+
     await classroom.save();
 
-    await User.findByIdAndUpdate(member._id, {$pull: {classes: classroom._id}});
+    await User.findByIdAndUpdate(member._id, { $pull: { classes: classroom._id } });
 
     res.status(200).json(new ApiResponse(200, {}, "Member removed successfully"));
 

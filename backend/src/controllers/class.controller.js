@@ -1,11 +1,10 @@
 import Classroom from "../models/classroom.model.js";
-import Comment from "../models/comment.model.js";
 import User from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asynchandler.js";
-import  Assignment  from "../models/assignment.model.js";
 import Announcement from "../models/anouncement.model.js";
+import axios from 'axios';
 // import Announcement from "../models/announcement.model.js";
 
 export const getClassData= asyncHandler(async(req, res) => {
@@ -53,6 +52,7 @@ export const getClassData= asyncHandler(async(req, res) => {
     }
 
     const announcements= classroom.announcements.map(announcement =>({
+        id:announcement._id,
         content :announcement.content,
         file_url: announcement.file_url,
         user_id: {
@@ -115,65 +115,76 @@ export const getClassWork = asyncHandler(async(req,res)=>{
     }
 });
 
-export const postAnnouncement=asyncHandler(async(req,res)=>{
+export const deleteClass = asyncHandler(async (req, res) => {
+    const userId = req.user._id; // This should be a valid ObjectId
+    const classId = req.params.classId;
+    const token = req.headers.authorization;
 
-});
-
-export const deleteClass=asyncHandler(async(req,res)=>{
-    const userId = req.user._id
-    const classId = req.params.classId
-
-    const user = await User.findById(userId)
-    if(!user)
-    {
-        throw new ApiError(404,"User not found")
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new ApiError(404, "User not found");
     }
 
-    const classroom = await Classroom.findById(classId)
-    if(!classroom)
-    {
-        throw new ApiError(404,"Classroom not found")
+    const classroom = await Classroom.findById(classId).populate("teachers").populate("students");
+    if (!classroom) {
+        throw new ApiError(404, "Classroom not found");
     }
 
-    if(!classroom.teachers.includes(userId))
-    {
-        throw new ApiError(403, "You are not a teacher of this class")
+    console.log(classroom);
+
+    // Check if the userId is included in the teachers' IDs
+    const isTeacher = classroom.teachers.some(teacher => teacher._id.equals(userId));
+    if (!isTeacher) {
+        throw new ApiError(403, "You are not a teacher of this class");
     }
 
-    await classroom.delete()
-    res.status(200).json(new ApiResponse(200,{},"Class deleted successfully"));
-});
+    // Remove the classroom ID from teachers
+    await Promise.all(
+        classroom.teachers.map(async (teacher) => {
+            teacher.classes = teacher.classes.filter((classId) => !classId.equals(classroom._id));
+            return teacher.save();
+        })
+    );
 
-export const deleteAnnouncement=asyncHandler(async(req,res)=>{
-    const userId = req.user._id
-    const classId = req.params.classId
-    const announcementId = req.params.announcementId
+    // Remove the classroom ID from students
+    await Promise.all(
+        classroom.students.map(async (student) => {
+            student.classes = student.classes.filter((classId) => !classId.equals(classroom._id));
+            return student.save();
+        })
+    );
 
-    const user = await User.findById(userId)
-    if(!user)
-    {
-        throw new ApiError(404,"User not found")
-    }
+    await Promise.all(
+        classroom.assignments.map(async (assignmentId) => {
+            try {
+                await axios.delete(`http://localhost:8000/classes/${classId}/assignments/${assignmentId}`,{
+                    headers:{
+                        Authorization:token
+                    }
+                });
+            } catch (error) {
+                console.error(`Failed to delete assignment ${assignmentId}:`, error.message);
+            }
+        })
+    );
 
-    const classroom = await Classroom.findById(classId)
-    if(!classroom)
-    {
-        throw new ApiError(404,"Classroom not found")
-    }
+    await Promise.all(
+        classroom.announcements.map(async (announcementId) => {
+            try {
+                await axios.delete(`http://localhost:8000/classes/${classId}/announcements/${announcementId}`,{
+                    headers:{
+                        Authorization:token
+                    }
+                });
+            } catch (error) {
+                console.error(`Failed to delete announcement ${announcementId}:`, error.message);
+            }
+        })
+    );
 
-    if(!classroom.teachers.includes(userId))
-    {
-        throw new ApiError(403, "You are not a teacher of this class")
-    }
+    await classroom.deleteOne(); // Delete the classroom from the database
 
-    const announcement = await Announcement.findById(announcementId)
-    if(!announcement)
-    {
-        throw new ApiError(404,"Announcement not found")
-    }
-
-    await announcement.delete()
-    res.status(200).json(new ApiResponse(200,{},"Announcement deleted successfully"));
+    res.status(200).json(new ApiResponse(200, {}, "Class deleted successfully"));
 });
 
 
