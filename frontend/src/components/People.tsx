@@ -61,7 +61,7 @@ const People = (): JSX.Element => {
 
   const addTeacher = async () => {
     try {
-      await axios!.post(`classes/${id}/members/add/teacher`, {
+      await axios!.post(`classes/${classId}/members/add/teacher`, {
         teacherMail: newTeacherEmail(),
       });
       setNewTeacherEmail("");

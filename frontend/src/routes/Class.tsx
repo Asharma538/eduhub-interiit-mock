@@ -12,6 +12,7 @@ function Class() {
   const [className, setClassName] = createSignal("Loading...");
   const [announcementContent, setAnnouncementContent] = createSignal("");
   const [posts, setPosts] = createSignal([]);
+  const [invitationCode, setInvitationCode]  = createSignal("");
 
   const user = {
     uid: "user123", // Replace with actual user ID fetching logic
@@ -23,7 +24,11 @@ function Class() {
   const fetchClassDetails = async () => {
     try {
       const response = await axios!.get(`/classes/${classId}`);
+      console.log(response);
+      console.log(response.data.data.classroom.invitation_code);
+
       setClassName(response.data.data.classroom.name || "No Class Name Available");
+      setInvitationCode(response.data.data.classroom.invitation_code || "");
       setPosts(response.data.data.announcements || []); // Set posts from announcements
     } catch (error) {
       console.error("Error fetching class details:", error);
@@ -62,9 +67,12 @@ function Class() {
   return (
     <div class="w-full max-w-6xl mx-auto mt-8">
       {/* Class header section */}
-      <div class="relative bg-teal-600 rounded-lg h-48 flex items-center justify-center">
+      <div class="relative bg-teal-600 rounded-lg flex-col h-48 flex items-center justify-center">
         <h1 class="relative text-white text-3xl font-semibold">
           {className()}
+        </h1>
+        <h1 class="relative text-white text-3xl font-semibold">
+         Invitation Code {invitationCode()}
         </h1>
       </div>
       
