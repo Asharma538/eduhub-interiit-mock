@@ -21,7 +21,7 @@ const URL = process.env.MONGO_URL;
 
 const corsOptions = {
   origin: "http://localhost:5500", // Replace with the allowed URL
-  methods: "*", // Allow all HTTP methods
+  methods: ["GET", "POST", "PUT", "DELETE"], // Allow all HTTP methods
   allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
   credentials: true,
 };
@@ -39,8 +39,8 @@ app.use("/classes/:classId", commentRouter);
 app.use(todoRouter);
 app.use(errorHandler);
 
-
-mongoose.connect(URL)
+mongoose
+  .connect(URL)
   .then(() => {
     console.log("connected to db.");
     app.listen(PORT, () => {
