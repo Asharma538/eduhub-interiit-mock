@@ -58,7 +58,7 @@ const App: Component = () => {
             <Route path="/class/:classId" component={Class} />
             <Route path="/class/:classId/classwork" component={Classwork} />
             <Route path="/assignment/:classId" component={Assignment} />
-            <Route path={"/class/:classId/people"} component={People} />
+            <Route path={"/people/class/:classId"} component={People} />
           </Router>
         </AxiosProvider>
       </div>
