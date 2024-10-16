@@ -5,18 +5,25 @@ import {
   MoreVert,
 } from "@suid/icons-material";
 import { Component, JSX, createSignal } from "solid-js";
+import { useAxiosContext } from "../../lib/useAxiosContext";
+import toast from "solid-toast";
+import { useClassContext } from "../../lib/useClassContext";
+import { useNavigate } from "@solidjs/router";
 
 export interface ClassCardProps {
   name: string;
   creatorName: string;
   id: string;
   details: string;
+  isTeacher: boolean;
   style?: JSX.CSSProperties;
-  onDeleteClass: (id: string) => void;
 }
 
 const ClassCard: Component<ClassCardProps> = (props) => {
   const [anchorEl, setAnchorEl] = createSignal<HTMLElement | null>(null);
+  const axios = useAxiosContext();
+  const { classDetails, setClassDetails } = useClassContext();
+  const navigate = useNavigate();
 
   const handleMoreClick = (event: MouseEvent) => {
     setAnchorEl(event.currentTarget as HTMLElement);
@@ -27,7 +34,15 @@ const ClassCard: Component<ClassCardProps> = (props) => {
   };
 
   const handleDeleteClass = () => {
-    props.onDeleteClass(props.id);
+    axios
+      ?.delete(`/classes/${props.id}`)
+      .then((data) => {
+        toast.success("Class deleted successfully");
+      })
+      .catch((err) => {
+        toast.error(err.response?.data?.message || "Error deleting class");
+      });
+
     handleClose();
   };
 
@@ -39,27 +54,46 @@ const ClassCard: Component<ClassCardProps> = (props) => {
       <div class="bg-teal-700 h-24 text-white p-2 border-b border-gray-300 relative">
         <div
           class="font-semibold text-xl cursor-pointer hover:underline line-clamp-2 break-words mr-6"
-          onClick={() => (window.location.href = `/class/${props.id}`)}
+          onClick={() => {
+            console.log(props.id, props.name, props.isTeacher);
+
+            setClassDetails({
+              classId: props.id,
+              className: props.name,
+              isTeacher: props.isTeacher,
+            });
+            localStorage.setItem(
+              "classDetails",
+              JSON.stringify(classDetails())
+            );
+
+            navigate("/class");
+          }}
         >
           {props.name}
         </div>
         <div class="absolute bottom-2 left-2 right-12 text-sm ">
           {props.creatorName}
         </div>
-        <div class="absolute top-2 right-2">
-          <IconButton onClick={handleMoreClick} class="text-white">
-            <MoreVert />
-          </IconButton>
-        </div>
+
+        {props.isTeacher && (
+          <div class="absolute top-2 right-2">
+            <IconButton onClick={handleMoreClick} class="text-white">
+              <MoreVert />
+            </IconButton>
+          </div>
+        )}
       </div>
 
-      <Menu
-        anchorEl={anchorEl()}
-        open={Boolean(anchorEl())}
-        onClose={handleClose}
-      >
-        <MenuItem onClick={handleDeleteClass}>Delete Class</MenuItem>
-      </Menu>
+      {props.isTeacher && (
+        <Menu
+          anchorEl={anchorEl()}
+          open={Boolean(anchorEl())}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={handleDeleteClass}>Delete Class</MenuItem>
+        </Menu>
+      )}
 
       <div class="p-2">
         <p class="text-gray-600 text-sm">{props.details}</p>

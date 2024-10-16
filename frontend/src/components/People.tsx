@@ -3,6 +3,8 @@ import { useParams } from "@solidjs/router";
 import { useAxiosContext } from "../lib/useAxiosContext";
 import toast from "solid-toast";
 import { useAuthContext } from "../lib/useAuthContext";
+import { useClassContext } from "../lib/useClassContext";
+import { c } from "vite/dist/node/types.d-aGj9QkWt";
 
 interface Member {
   email: string;
@@ -10,7 +12,6 @@ interface Member {
 }
 
 const People = (): JSX.Element => {
-  const { classId } = useParams();
   const [teachers, setTeachers] = createSignal<Member[]>([]);
   const [students, setStudents] = createSignal<Member[]>([]);
   const [newStudentEmail, setNewStudentEmail] = createSignal("");
@@ -19,10 +20,12 @@ const People = (): JSX.Element => {
   const [loading, setLoading] = createSignal(true);
   const axios = useAxiosContext();
   const auth = useAuthContext();
-
+  const { classDetails } = useClassContext();
   const fetchMembers = async () => {
     try {
-      const response = await axios!.get(`classes/${classId}/members`);
+      const response = await axios!.get(
+        `classes/${classDetails().classId}/members`
+      );
       setTeachers(response.data.teachers);
       setStudents(response.data.students);
       setLoading(false);
@@ -49,7 +52,7 @@ const People = (): JSX.Element => {
   });
   const addStudent = async () => {
     try {
-      await axios!.post(`classes/${classId}/members/add/student`, {
+      await axios!.post(`classes/${classDetails().classId}/members/add/student`, {
         studentMail: newStudentEmail(),
       });
       setNewStudentEmail("");
@@ -61,7 +64,7 @@ const People = (): JSX.Element => {
 
   const addTeacher = async () => {
     try {
-      await axios!.post(`classes/${classId}/members/add/teacher`, {
+      await axios!.post(`classes/${classDetails().classId}/members/add/teacher`, {
         teacherMail: newTeacherEmail(),
       });
       setNewTeacherEmail("");
@@ -73,7 +76,7 @@ const People = (): JSX.Element => {
 
   const deleteMember = async (email: string) => {
     try {
-      await axios!.delete(`/classes/${classId}/members`, {
+      await axios!.delete(`/classes/${classDetails().classId}/members`, {
         data: {
           memberMail: email,
         },
@@ -132,7 +135,7 @@ const People = (): JSX.Element => {
               {student.display_name} -{" "}
               <span class="text-gray-600">{student.email}</span>
             </span>
-            {isTeacher() && (
+            {!isTeacher() && (
               <button
                 onClick={() => deleteMember(student.email)}
                 class="bg-red-600 text-white rounded px-4 py-2"

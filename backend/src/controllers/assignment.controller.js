@@ -56,7 +56,7 @@ export const postAssignment = asyncHandler(async (req, res) => {
     classroom.assignments.push(savedAssignment._id);
     await classroom.save();
 
-    res.status(200).json(new ApiResponse(200, savedAssignment._id, "Assignment posted successfully"));
+    res.status(201).json(new ApiResponse(201, savedAssignment._id, "Assignment posted successfully"));
 });
 
 export const getAssignment=asyncHandler(async(req,res)=>{
@@ -273,7 +273,7 @@ export const getSubmissions = asyncHandler(async (req, res) => {
 
     // Validate assignment existence
     const assignment = await Assignment.findById(assignmentId).populate('submissions');
-    if (!assignment) {
+    if (!assignment) { 
         throw new ApiError(404, "Assignment not found");
     }
 
@@ -283,10 +283,6 @@ export const getSubmissions = asyncHandler(async (req, res) => {
         throw new ApiError(403, "Only teachers can view submissions for this assignment");
     }
 
-    // Check if the assignment has submissions
-    if (assignment.submissions.length === 0) {
-        throw new ApiError(404, "No submissions found for this assignment");
-    }
 
     // Fetch all submissions for the assignment and populate the user details
     const submissions = await Submission.find({
