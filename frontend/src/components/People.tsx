@@ -132,7 +132,7 @@ const People = (): JSX.Element => {
               {student.display_name} -{" "}
               <span class="text-gray-600">{student.email}</span>
             </span>
-            {isTeacher() && (
+            {!isTeacher() && (
               <button
                 onClick={() => deleteMember(student.email)}
                 class="bg-red-600 text-white rounded px-4 py-2"

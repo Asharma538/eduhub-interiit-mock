@@ -131,7 +131,7 @@ export const getClasses = asyncHandler(async (req, res) => {
         name: classroom.name,
         details: classroom.details,
         teacher: classroom.teachers[0].display_name,
-        //any more data needed
+        isTeacher: classroom.teachers.map((value) =>value.display_name).includes(user.display_name),
     }));
 
     res.status(200).json(new ApiResponse(200, classesData));
