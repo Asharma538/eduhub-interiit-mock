@@ -7,6 +7,8 @@ import {
 import { Component, JSX, createSignal } from "solid-js";
 import { useAxiosContext } from "../../lib/useAxiosContext";
 import toast from "solid-toast";
+import { useClassContext } from "../../lib/useClassContext";
+import { useNavigate } from "@solidjs/router";
 
 export interface ClassCardProps {
   name: string;
@@ -20,6 +22,8 @@ export interface ClassCardProps {
 const ClassCard: Component<ClassCardProps> = (props) => {
   const [anchorEl, setAnchorEl] = createSignal<HTMLElement | null>(null);
   const axios = useAxiosContext();
+  const { classDetails, setClassDetails } = useClassContext();
+  const navigate = useNavigate();
 
   const handleMoreClick = (event: MouseEvent) => {
     setAnchorEl(event.currentTarget as HTMLElement);
@@ -50,7 +54,21 @@ const ClassCard: Component<ClassCardProps> = (props) => {
       <div class="bg-teal-700 h-24 text-white p-2 border-b border-gray-300 relative">
         <div
           class="font-semibold text-xl cursor-pointer hover:underline line-clamp-2 break-words mr-6"
-          onClick={() => (window.location.href = `/class/${props.id}`)}
+          onClick={() => {
+            console.log(props.id, props.name, props.isTeacher);
+
+            setClassDetails({
+              classId: props.id,
+              className: props.name,
+              isTeacher: props.isTeacher,
+            });
+            localStorage.setItem(
+              "classDetails",
+              JSON.stringify(classDetails())
+            );
+
+            navigate("/class");
+          }}
         >
           {props.name}
         </div>

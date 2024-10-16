@@ -2,17 +2,21 @@ import { createSignal, For, createEffect } from "solid-js";
 import { IconButton } from "@suid/material";
 import SendOutlinedIcon from "@suid/icons-material/SendOutlined";
 import moment from "moment";
-import { A, useParams } from "@solidjs/router";
+import { A } from "@solidjs/router";
 import { useAxiosContext } from "../lib/useAxiosContext";
 import toast from "solid-toast";
+import { useClassContext } from "../lib/useClassContext";
 
 function Class() {
   const axios = useAxiosContext();
-  const { classId } = useParams(); // Get classId from URL parameters
+  const { classDetails } = useClassContext();
+
+
+  // Get classId from URL parameters
   const [className, setClassName] = createSignal("Loading...");
   const [announcementContent, setAnnouncementContent] = createSignal("");
   const [posts, setPosts] = createSignal([]);
-  const [invitationCode, setInvitationCode]  = createSignal("");
+  const [invitationCode, setInvitationCode] = createSignal("");
 
   const user = {
     uid: "user123", // Replace with actual user ID fetching logic
@@ -23,11 +27,13 @@ function Class() {
   // Function to fetch class details and announcements from the backend
   const fetchClassDetails = async () => {
     try {
-      const response = await axios!.get(`/classes/${classId}`);
+      const response = await axios!.get(`/classes/${classDetails().classId}`);
       console.log(response);
       console.log(response.data.data.classroom.invitation_code);
 
-      setClassName(response.data.data.classroom.name || "No Class Name Available");
+      setClassName(
+        response.data.data.classroom.name || "No Class Name Available"
+      );
       setInvitationCode(response.data.data.classroom.invitation_code || "");
       setPosts(response.data.data.announcements || []); // Set posts from announcements
     } catch (error) {
@@ -46,17 +52,19 @@ function Class() {
     if (announcementContent().trim() !== "") {
       try {
         // POST the new announcement to the backend
-        const response = await axios!.post(`/classes/${classId}/announcements`, {
-          content: announcementContent(),
-        });
+        const response = await axios!.post(
+          `/classes/${classDetails().classId}/announcements`,
+          {
+            content: announcementContent(),
+          }
+        );
 
         // Clear the input after posting
-        setAnnouncementContent(""); 
+        setAnnouncementContent("");
         toast.success("Announcement created successfully");
 
         // Fetch the updated list of announcements from the backend
         fetchClassDetails();
-
       } catch (error) {
         console.error("Error posting announcement:", error);
         toast.error("Failed to post announcement");
@@ -72,18 +80,17 @@ function Class() {
           {className()}
         </h1>
         <h1 class="relative text-white text-3xl font-semibold">
-         Invitation Code {invitationCode()}
+          Invitation Code {invitationCode()}
         </h1>
       </div>
-      
 
       {/* Tabs: Stream, Classwork, People */}
       <div class="flex justify-center space-x-8 mt-6">
         <button class="border-b-2 border-blue-500 font-semibold">Stream</button>
-        <A href={`/class/${classId}/classwork`} class="text-gray-500">
+        <A href={`/classwork`} class="text-gray-500">
           Classwork
         </A>
-        <A href={`/people/class/${classId}`} class="text-gray-500">
+        <A href={`/people`} class="text-gray-500">
           People
         </A>
       </div>
@@ -131,14 +138,21 @@ function Class() {
                   />
                   <div>
                     <div class="text-sm text-gray-500">
-                      {post.user_id.display_name} • {moment(post.date).fromNow()}
+                      {post.user_id.display_name} •{" "}
+                      {moment(post.date).fromNow()}
                     </div>
                     <p class="mt-2 text-gray-800">{post.content}</p>
                     {/* Display any file URLs (if available) */}
                     {post.file_url.length > 0 && (
                       <div class="mt-2">
                         {post.file_url.map((file) => (
-                          <a href={file} target="_blank" class="text-blue-500 underline">View File</a>
+                          <a
+                            href={file}
+                            target="_blank"
+                            class="text-blue-500 underline"
+                          >
+                            View File
+                          </a>
                         ))}
                       </div>
                     )}
