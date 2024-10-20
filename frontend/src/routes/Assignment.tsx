@@ -21,11 +21,11 @@ const Assignment = () => {
   });
 
   const validateForm = (): boolean => {
-    const { title, description, deadline, file_url } = formData();
+    const { title, description, file_url } = formData();
     if (
       !title.trim() ||
       !description.trim() ||
-      !deadline.trim() ||
+      // !deadline.trim() || // Optional field
       !file_url.trim()
     ) {
       toast.error("All fields must be filled out.");
@@ -43,7 +43,7 @@ const Assignment = () => {
     if (!validateForm()) {
       return;
     }
-
+    
     setLoading(true);
     try {
       axios!
