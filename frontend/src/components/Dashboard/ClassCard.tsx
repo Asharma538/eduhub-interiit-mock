@@ -103,12 +103,12 @@ const ClassCard: Component<ClassCardProps> = (props) => {
       <div class="h-48 border-b border-gray-300"></div>
 
       <div class="flex flex-row-reverse p-2">
-        <IconButton>
-          <FolderOpenOutlined />
-        </IconButton>
-        <IconButton>
+        <a href='/classwork'><IconButton>
+          <FolderOpenOutlined/>
+        </IconButton></a>
+        <a href='/people'><IconButton>
           <AssignmentIndOutlined />
-        </IconButton>
+        </IconButton></a>
       </div>
     </div>
   );

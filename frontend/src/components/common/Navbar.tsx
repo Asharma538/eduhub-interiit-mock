@@ -28,7 +28,7 @@ const Navbar = () => {
         <IconButton>
           <MenuIcon />
         </IconButton>
-        <span class="text-lg" onClick={() => (window.location.href = "/dashboard")}>
+        <span class="text-lg cursor-pointer " onClick={() => (window.location.href = "/dashboard")}>
           EduHub
         </span>
       </div>
