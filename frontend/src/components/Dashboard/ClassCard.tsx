@@ -8,7 +8,7 @@ import { Component, JSX, createSignal } from "solid-js";
 import { useAxiosContext } from "../../lib/useAxiosContext";
 import toast from "solid-toast";
 import { useClassContext } from "../../lib/useClassContext";
-import { useNavigate } from "@solidjs/router";
+import { A, useNavigate } from "@solidjs/router";
 
 export interface ClassCardProps {
   name: string;
@@ -45,6 +45,20 @@ const ClassCard: Component<ClassCardProps> = (props) => {
 
     handleClose();
   };
+
+  const handleIconClick = (path: string) => {
+    
+    setClassDetails({
+      classId: props.id,
+      className: props.name,
+      isTeacher: props.isTeacher,
+    });
+    localStorage.setItem("classDetails", JSON.stringify(classDetails()));
+    
+    // Navigate to the specific route of classswork or assignments from local storage
+    navigate(path);
+  };
+
 
   return (
     <div
@@ -103,12 +117,12 @@ const ClassCard: Component<ClassCardProps> = (props) => {
       <div class="h-48 border-b border-gray-300"></div>
 
       <div class="flex flex-row-reverse p-2">
-        <a href='/classwork'><IconButton>
+     <IconButton onClick={() => handleIconClick("/classwork")}>
           <FolderOpenOutlined/>
-        </IconButton></a>
-        <a href='/people'><IconButton>
+        </IconButton>
+        <IconButton onClick={() => handleIconClick("/classwork")}>
           <AssignmentIndOutlined />
-        </IconButton></a>
+        </IconButton>
       </div>
     </div>
   );
