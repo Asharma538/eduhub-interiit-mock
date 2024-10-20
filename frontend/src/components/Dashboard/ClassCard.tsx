@@ -51,10 +51,8 @@ const ClassCard: Component<ClassCardProps> = (props) => {
       class="w-72 border border-gray-300 rounded-lg overflow-hidden cursor-pointer"
       style={props.style}
     >
-      <div class="bg-teal-700 h-24 text-white p-2 border-b border-gray-300 relative">
-        <div
-          class="font-semibold text-xl cursor-pointer hover:underline line-clamp-2 break-words mr-6"
-          onClick={() => {
+      <div class="bg-teal-700 h-24 text-white p-2 border-b border-gray-300 relative" 
+      onClick={() => {
             console.log(props.id, props.name, props.isTeacher);
 
             setClassDetails({
@@ -68,7 +66,10 @@ const ClassCard: Component<ClassCardProps> = (props) => {
             );
 
             navigate("/class");
-          }}
+          }}>
+        <div
+          class="font-semibold text-xl cursor-pointer hover:underline line-clamp-2 break-words mr-6"
+          
         >
           {props.name}
         </div>
