@@ -4,7 +4,6 @@ import { Navigator, useNavigate } from "@solidjs/router";
 import { Axios, AxiosInstance } from "axios";
 import { useAxiosContext } from "../lib/useAxiosContext";
 
-const backend_url: string = import.meta.env.VITE_BACKEND_URL;
 
 const handleCredentialResponse = (
   response: any,
@@ -15,8 +14,6 @@ const handleCredentialResponse = (
   console.log("Google ID Token:", token);
 
   // Send the token to your backend for verification
-  console.log(backend_url);
-  console.log(backend_url + "/login");
 
   axios
     .post(

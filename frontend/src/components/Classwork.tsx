@@ -1,57 +1,119 @@
-import { createSignal } from 'solid-js';
-import { useNavigate } from '@solidjs/router';
+import { createEffect, createSignal } from "solid-js";
+import { Button, IconButton } from "@suid/material";
+import { useNavigate } from "@solidjs/router";
+import { useAxiosContext } from "../lib/useAxiosContext";
+import { useClassContext } from "../lib/useClassContext";
+import toast from "solid-toast";
+import DeleteIcon from "@suid/icons-material/Delete";
+
+interface AssignmentDetails {
+  _id: string;
+  title: string;
+  description: string;
+  deadline: string;
+  file_url: string;
+  user_id: {
+    email: string;
+    display_name: string;
+  };
+}
 
 const Classwork = () => {
-  // Dummy data for topics and assignments (removing quizzes)
-  const [topics] = createSignal([
-    {
-      id: 1,
-      title: 'Week 1 - Introduction to React',
-      assignments: [
-        { id: 1, title: 'Assignment 1: Introduction' },
-        // Removed the Quiz
-      ],
-    },
-    {
-      id: 2,
-      title: 'Week 2 - Advanced React',
-      assignments: [
-        { id: 2, title: 'Assignment 2: Hooks' },
-        // Removed the Quiz
-      ],
-    }
-  ]);
-
+  const [assignment, setAssignment] = createSignal<AssignmentDetails[]>([]);
+  const axios = useAxiosContext();
+  const classContext = useClassContext();
   const navigate = useNavigate();
 
-  const handleAssignmentClick = (assignmentId) => {
-    // Navigate to the assignment page with the assignmentId as a parameter
-    navigate(`/assignment/${assignmentId}`);
+  createEffect(() => {
+    axios
+      ?.get<{ assignments: AssignmentDetails[] }>(
+        `classes/${classContext.classDetails().classId}/classwork`
+      )
+      .then((data) => {
+        setAssignment(data.data.assignments);
+      })
+      .catch((err) => {
+        toast.error(
+          err.response?.data?.message || "Error fetching assignments"
+        );
+      });
+  });
+
+  const handleAssignmentClick = (assignmentId: string) => {
+    if (classContext.classDetails().isTeacher) {
+      navigate(`/submissions/${assignmentId}`);
+    }
+  };
+
+  const handleDeleteAssignment = (assignmentId: string) => {
+    axios
+      ?.delete(
+        `/classes/${
+          classContext.classDetails().classId
+        }/assignments/${assignmentId}`
+      )
+      .then(() => {
+        toast.success("Assignment deleted successfully");
+      })
+      .catch((err) => {
+        toast.error(err.response?.data?.message || "Error deleting assignment");
+      });
+  };
+
+  const handleCreateAssignment = () => {
+    navigate(`/createAssignment`);
   };
 
   return (
     <div class="p-6 bg-gray-100 min-h-screen">
       <div class="max-w-4xl mx-auto bg-white shadow-md rounded-lg">
-        <div class="p-4 border-b border-gray-200">
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
           <h1 class="text-2xl font-semibold text-gray-900">Classwork</h1>
+
+          {/* Show create button for teachers */}
+          {classContext.classDetails().isTeacher && (
+            <Button variant="contained" onClick={handleCreateAssignment}>
+              Create Assignment
+            </Button>
+          )}
         </div>
         <div class="p-4">
-          {topics().map(topic => (
-            <div class="mb-4" key={topic.id}>
+          {assignment().map((topic) => (
+            <div class="mb-4">
               <div class="flex items-center justify-between mb-2">
-                <h2 class="text-xl font-bold text-gray-800">{topic.title}</h2>
+                <h2
+                  class={`text-xl font-bold text-gray-800 ${
+                    classContext.classDetails().isTeacher
+                      ? "cursor-pointer"
+                      : ""
+                  }`}
+                  onClick={() => handleAssignmentClick(topic._id)}
+                >
+                  {topic.title}
+                </h2>
+
+                {/* Show delete button for teachers */}
+
+                <IconButton
+                  aria-label="delete"
+                  onClick={() => {
+                    classContext.classDetails().isTeacher
+                      ? handleDeleteAssignment(topic._id)
+                      : navigate(`/submiteAssignment/${topic._id}`);
+                  }}
+                >
+                  {classContext.classDetails().isTeacher ? (
+                    <DeleteIcon />
+                  ) : (
+                    "Submit"
+                  )}
+                </IconButton>
               </div>
-              <div class="space-y-2">
-                {topic.assignments.map(assignment => (
-                  <div
-                    class="p-4 bg-gray-50 border rounded-lg hover:bg-gray-100 cursor-pointer"
-                    onClick={() => handleAssignmentClick(assignment.id)}
-                    key={assignment.id}
-                  >
-                    <h3 class="text-lg text-gray-700">{assignment.title}</h3>
-                  </div>
-                ))}
-              </div>
+              <p class="text-gray-600 mb-2">{topic.description}</p>
+              <p class="text-gray-600 mb-2">Deadline: {topic.deadline}</p>
+              <p class="text-gray-600 mb-4">
+                Posted by: {topic.user_id.display_name}
+              </p>
             </div>
           ))}
         </div>

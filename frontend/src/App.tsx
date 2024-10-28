@@ -3,7 +3,7 @@ import { createSignal, type Component } from "solid-js";
 import ClassCard from "./components/Dashboard/ClassCard";
 import Dashboard from "./routes/Dashboard";
 import Navbar from "./components/common/Navbar";
-import Assignment from "./Assignment/Assignment";
+import Assignment from "./routes/Assignment";
 import { Route, Router } from "@solidjs/router";
 import GoogleLogin from "./components/GoogleLogin";
 import People from "./components/People";
@@ -14,6 +14,9 @@ import { Toaster } from "solid-toast";
 import AnnouncementsList from "./components/Class/Announcements";
 import { AuthProvider, UserDetails } from "./lib/useAuthContext";
 import Classwork from "./components/Classwork";
+import { ClassProvider } from "./lib/useClassContext";
+import AssignmentSubmissions from "./routes/SubmissionList";
+import FileSubmission from "./routes/SubmitAssignment";
 
 const App: Component = () => {
   const [auth, setAuth] = createSignal<UserDetails>({
@@ -38,11 +41,9 @@ const App: Component = () => {
   );
 
   axiosInstance.get("/profile").then((res) => {
-   
     const { _id, email, display_name } = res.data.data;
     setAuth({ _id, email, display_name });
     console.log(auth());
-    
   });
 
   return (
@@ -50,16 +51,26 @@ const App: Component = () => {
       {/* Sidebar with width and background color */}
       <div class="flex flex-col flex-grow">
         <AxiosProvider axiosInstance={axiosInstance}>
-          <Toaster />
-          <Navbar />
-          <Router>
-            <Route path="/" component={GoogleLogin} />
-            <Route path="/dashboard" component={Dashboard} />
-            <Route path="/class/:classId" component={Class} />
-            <Route path="/class/:classId/classwork" component={Classwork} />
-            <Route path="/assignment/:classId" component={Assignment} />
-            <Route path={"/people/class/:classId"} component={People} />
-          </Router>
+          <ClassProvider>
+            <Toaster />
+            <Navbar />
+            <Router>
+              <Route path="/" component={GoogleLogin} />
+              <Route path="/dashboard" component={Dashboard} />
+              <Route path="/class/" component={Class} />
+              <Route path="/classwork" component={Classwork} />
+              <Route path="/createAssignment" component={Assignment} />
+              <Route path="/people" component={People} />
+              <Route
+                path="/submissions/:assignmentId"
+                component={AssignmentSubmissions}
+              />
+              <Route
+                path="/submiteAssignment/:assignmentId"
+                component={FileSubmission}
+              />
+            </Router>
+          </ClassProvider>
         </AxiosProvider>
       </div>
     </div>

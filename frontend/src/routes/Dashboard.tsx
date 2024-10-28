@@ -10,6 +10,7 @@ interface GetClasses {
   name: string;
   details: string;
   teacher: string;
+  isTeacher: boolean
 }
 
 const Dashboard = () => {
@@ -43,6 +44,7 @@ const Dashboard = () => {
               name={individualClass.name}
               id={individualClass.id}
               style={{ "margin-right": "30px", "margin-bottom": "30px" }}
+              isTeacher= {individualClass.isTeacher}
             />
           ))}
         </div>
